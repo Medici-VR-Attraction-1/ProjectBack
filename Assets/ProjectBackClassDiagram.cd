@@ -39,5 +39,29 @@
       <Field Name="_playerMovement" />
     </ShowAsAssociation>
   </Class>
+  <Class Name="IngredientDispenser">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Assets\WorkSpace\ASM\Prefabs\IngredientGenerator\Scripts\IngredientDispenser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_ingredient" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="IngredientGenerator">
+    <Position X="11.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAABAAEA=</HashCode>
+      <FileName>Assets\WorkSpace\ASM\Prefabs\IngredientGenerator\Scripts\IngredientGenerator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="IngredientList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="UnityEngine.GameObject" Collapsed="true">
+    <Position X="9" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
   <Font Name="맑은 고딕" Size="9" />
 </ClassDiagram>

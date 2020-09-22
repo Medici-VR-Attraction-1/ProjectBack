@@ -20,9 +20,10 @@ public class PlayerInputController : MonoBehaviour
     private float _rotateVertical = 0f;
     private float _rotateHorizontal = 0f;
 
+    #region MonoBehaviour Callbacks
     private void Awake()
     {
-        if(PlayerCamera == null)
+        if (PlayerCamera == null)
         {
             Debug.Log("PlayerInputController : Player Camera is UnSet. Please Check Properties.");
             gameObject.SetActive(false);
@@ -32,7 +33,7 @@ public class PlayerInputController : MonoBehaviour
             PlayerCamera.tag = "MainCamera";
         }
         _playerMovement = GetComponent<PlayerMovement>();
-        
+
         if (XRDevice.isPresent)
         {
 
@@ -49,7 +50,9 @@ public class PlayerInputController : MonoBehaviour
     {
         HandlePlayerInput();
     }
+    #endregion
 
+    #region Input Handler
     private void MovePlayerByKey()
     {
         Vector3 inputVector = Vector3.zero;
@@ -67,7 +70,7 @@ public class PlayerInputController : MonoBehaviour
 
         PlayerCamera.transform.rotation = Quaternion.Euler(rotateEuler);
     }
-    
+
     private void MovePlayerByKatWalk()
     {
 
@@ -77,4 +80,5 @@ public class PlayerInputController : MonoBehaviour
     {
 
     }
+    #endregion
 }
