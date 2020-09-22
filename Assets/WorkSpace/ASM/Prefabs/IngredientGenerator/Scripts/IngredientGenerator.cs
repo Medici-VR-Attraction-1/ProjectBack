@@ -18,10 +18,15 @@ public class IngredientGenerator : MonoBehaviour
             Debug.Log("IngredientGenerator : IngredientGenerator has Duplicated, Delete Another One");
             gameObject.SetActive(false);
         }
+
+        _instance = this;
     }
 
-    public GameObject GetRandomIngredient() 
-    { 
-        return null; 
+    public GameObject GetRandomIngredient()
+    {
+        int random = Random.Range(0, IngredientList.Count);
+        GameObject _randomIngredient = IngredientList[random];
+        IngredientList.RemoveAt(random);
+        return _randomIngredient;
     }
 }
