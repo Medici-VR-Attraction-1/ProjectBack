@@ -43,3 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7f3941b35b95cd449af74798f67580e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VRPlayerInstance: {fileID: 1966969686093982584, guid: 5dd2e672f8fc75b4bb5619ad7874395d,
+    type: 3}
+  KMPlayerInstance: {fileID: 7318230386261842063, guid: 74f5d911f6e3ba74fbdc026e259dd3e6,
+    type: 3}
+  PlayerStartPoint: {fileID: 0}
