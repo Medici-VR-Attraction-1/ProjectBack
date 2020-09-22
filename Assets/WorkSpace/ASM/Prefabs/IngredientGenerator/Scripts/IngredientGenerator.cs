@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class IngredientGenerator : MonoBehaviour
@@ -10,8 +11,7 @@ public class IngredientGenerator : MonoBehaviour
     [SerializeField]
     private List<GameObject> IngredientList;
 
-    [SerializeField]
-    private List<GameObject> IngredientList2;
+    private GameObject[] _ingredientListCache;
 
     private void Awake()
     {
@@ -23,39 +23,21 @@ public class IngredientGenerator : MonoBehaviour
         }
 
         _instance = this;
+        _ingredientListCache = IngredientList.ToArray();
     }
 
     public GameObject GetRandomIngredient()
     {
-        bool isSame;
-        //  int random = Random.Range(0, IngredientList.Count);
-        //IngredientList.RemoveAt(random);
-        //if (IngredientList.Count == 0)
-        //{
-        //    int random2 = Random.Range(0, IngredientList2.Count);
-        //    _randomIngredient = IngredientList2[random2];
-
-        //    print(IngredientList2[random2]);
-        //}
-        int[] random = new int[IngredientList.Count];
-      
-        GameObject _randomIngredient = IngredientList[random];
-        for (int i = 0; i < IngredientList.Count; i++)
+        if (IngredientList.Count == 0)
         {
-            while (true)
-            {
-                isSame = false;
-                for (int j = 0; j < i; j++)
-                {
-                    if (random[j] == random[i])
-                    {
-                        isSame = true;
-                        break;
-                    }
-                }
-                if (!isSame) break;
-            }
+            IngredientList = _ingredientListCache.ToList<GameObject>();
         }
-        return _randomIngredient;
+
+        int randomNumber = Random.Range(0, IngredientList.Count);
+        GameObject randomIngredient = IngredientList[randomNumber];
+
+        IngredientList.RemoveAt(randomNumber);
+
+        return randomIngredient;
     }
 }
