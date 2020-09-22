@@ -240,6 +240,9 @@ GameObject:
   - component: {fileID: 1966969686095954398}
   - component: {fileID: 1966969686094921818}
   - component: {fileID: 1966969686087866682}
+  - component: {fileID: 6884655106097640755}
+  - component: {fileID: 2500476489281233901}
+  - component: {fileID: 8571829131557211181}
   m_Layer: 0
   m_Name: VRPlayerPrefab
   m_TagString: Untagged
@@ -338,6 +341,49 @@ MonoBehaviour:
   - {x: -1.65, y: 0.01, z: -1.275}
   - {x: -1.65, y: 0.01, z: 1.275}
   - {x: 1.65, y: 0.01, z: 1.275}
+--- !u!54 &6884655106097640755
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1966969686093982584}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &2500476489281233901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1966969686093982584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f79c610881e8b4c9ef851a347378d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerMoveSpeed: 1
+--- !u!114 &8571829131557211181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1966969686093982584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c54e5f2847020d42afd7e0a64b1fe30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerCamera: {fileID: 1967959804541837956}
+  KMPlayerCameraRotateSpeed: 360
 --- !u!1 &1967959804541837956
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,6 +396,7 @@ GameObject:
   - component: {fileID: 1948679207567752896}
   - component: {fileID: 1897090316046077614}
   - component: {fileID: 1934602711795113652}
+  - component: {fileID: 4135854867460031689}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -434,3 +481,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c30a2316e98e1dc4b97e432a1301f85c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4135854867460031689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967959804541837956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2

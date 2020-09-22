@@ -31,7 +31,7 @@ public class MainSceneGameManager : MonoBehaviour
     private int _playerScore = 0;
 
     #region MonoBehaviour Callbacks
-    private void Start()
+    private void Awake()
     {
         // Check and Set Singleton Object
         if(_instance != null)
