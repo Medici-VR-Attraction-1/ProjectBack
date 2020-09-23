@@ -6,13 +6,13 @@ using Valve.VR;
 
 public class GuestController : MonoBehaviour
 {
-    private enum State 
+    private enum GuestState 
     {
-        Enter,
-        Order,
-        Leave
+        Moving,
+        OrderPending,
+        LeaveRestaurant
     }
-    State state;
+    GuestState state;
 
     [SerializeField]
     private GameObject Target;
@@ -24,9 +24,7 @@ public class GuestController : MonoBehaviour
     private Animator _animator;
     private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
     private WaitForSeconds _pathFindRate = new WaitForSeconds(0.1f);
-
-
-
+    private Vector3 _spawnPosition = Vector3.zero;
 
     private void Awake()
     {
@@ -36,9 +34,11 @@ public class GuestController : MonoBehaviour
 
     private void OnEnable()
     {
-        state = State.Enter;
+        state = GuestState.Moving;
         _navMeshAgent.enabled = false;
         _navMeshAgent.enabled = true;
+
+        _spawnPosition = transform.position;
         SetTarget();
     }
 
@@ -52,13 +52,14 @@ public class GuestController : MonoBehaviour
     {
         switch (state)
         {
-            case State.Enter:
+            case GuestState.Moving:
                 break;
-            case State.Order: Order();
+            case GuestState.OrderPending: 
+                Order();
                 break;
-            case State.Leave: 
+            case GuestState.LeaveRestaurant: 
                 WalkToDoor();
-                if (Vector3.Distance(this.transform.position,Target.transform.position) < 0.1f)
+                if (Vector3.Distance(this.transform.position,_spawnPosition) < 1f)
                 { LeaveStore(); }      
                 break;
 
@@ -68,7 +69,7 @@ public class GuestController : MonoBehaviour
     private void SetTarget()
     {
         Target = GuestGenerator.GetChair();
-        _navMeshAgent.speed = 3.5f;
+        Debug.Log(Target.name);
         _navMeshAgent.isStopped = false;
         _navMeshAgent.SetDestination(Target.transform.position
                                     + Target.transform.forward * targetDistanceOffset);
@@ -83,6 +84,7 @@ public class GuestController : MonoBehaviour
         }
         _navMeshAgent.isStopped = true;
 
+        //_animator.SetTrigger("Sit");
         for (int i = 0; i < 120; i++)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation,
@@ -90,29 +92,24 @@ public class GuestController : MonoBehaviour
                                            Time.deltaTime * 10f);
             yield return _rotationRate;
         }
-        //_animator.SetTrigger("Sit");
-        
+
+        state = GuestState.OrderPending;
         yield return null;
-        state = State.Order;
     }
 
     private void Order()
     {
-        print("주문상태");
-        state = State.Leave;
+        state = GuestState.LeaveRestaurant;
     }
     
     private void WalkToDoor()
     {
         _navMeshAgent.isStopped = false;
-        Target = GameObject.Find("GuestGenerator");
-        _navMeshAgent.SetDestination(Target.transform.position);
-        _navMeshAgent.speed = 3.5f;
+        _navMeshAgent.SetDestination(_spawnPosition);
     }
+
     private void LeaveStore()
     {
         this.gameObject.SetActive(false);
-        GuestGenerator.EnqueueGuest(this.gameObject);
-        print("가게 나가기 완료");
     }
 }

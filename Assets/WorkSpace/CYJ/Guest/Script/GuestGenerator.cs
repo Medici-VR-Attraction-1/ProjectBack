@@ -12,14 +12,12 @@ public class GuestGenerator : MonoBehaviour
     public static void EnqueueGuest(GameObject guest) { _guestQueue.Enqueue(guest); }
 
     [SerializeField]
-    private float CreatTime = 10f;
+    private GameObject GuestPrefab = null;
 
-    [SerializeField]
-    private GameObject GuestPrefab;
+    [SerializeField, Range(0.0f, 10.0f)]
+    private float GuestSpawnRate = 2.0f;
 
-    
-    //private float _currentTime = 0f;
-    private WaitForSeconds _guestSpawnRate = new WaitForSeconds(2.0f);
+    private WaitForSeconds _guestSpawnRate;
     private bool _isEnabled;
 
     #region MonoBehaivour Callbacks
@@ -28,27 +26,20 @@ public class GuestGenerator : MonoBehaviour
 
     private void Start()
     {
+        if (GuestPrefab == null)
+        {
+            Debug.Log("GuestGenerator : Guest is UnSet. Please Check Properties.");
+            gameObject.SetActive(false);
+        }
+
         for (int i = 0; i < _chairQueue.Count; i++)
         {
             GameObject guest = Instantiate(GuestPrefab);
             guest.SetActive(false);
         }
-        StartCoroutine(_SpawnGuest());
-    }
 
-    private void Update()
-    {
-        //_currentTime += Time.deltaTime;
-        //if (_currentTime > CreatTime)
-        //{
-        //    if(_guestQueue.Count != 0)
-        //    {
-        //        GameObject guest = _guestQueue.Dequeue();
-        //        guest.SetActive(true);
-        //        guest.transform.position = transform.position;
-        //    }
-        //    _currentTime = 0;
-        //}
+        _guestSpawnRate = new WaitForSeconds(GuestSpawnRate);
+        StartCoroutine(_SpawnGuest());
     }
     #endregion
 
@@ -67,6 +58,4 @@ public class GuestGenerator : MonoBehaviour
         }
         yield return null;
     }
-
-    
 }

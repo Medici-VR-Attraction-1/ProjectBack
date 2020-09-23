@@ -60,12 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 066c4988378a1dd43b1170d4c9f615be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChairList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  Target: {fileID: 0}
   targetDistanceOffset: 0.5
 --- !u!195 &6612715700690548574
 NavMeshAgent:
@@ -78,7 +73,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
