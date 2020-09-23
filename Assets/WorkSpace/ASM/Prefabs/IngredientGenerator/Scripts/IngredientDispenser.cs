@@ -9,6 +9,9 @@ public class IngredientDispenser : MonoBehaviour
     [SerializeField]
     private GameObject dispenserObject;
 
+    [SerializeField]
+    private bool IsInstantiateAll = true;
+
     private GameObject hand;
 
 
@@ -20,24 +23,36 @@ public class IngredientDispenser : MonoBehaviour
 
         //Instantiate(_ingredient, transform.position, transform.rotation);
 
-        // StartCoroutine("GenerateTypeOne");
-        GenerateTypeTwo();
+        if (IsInstantiateAll)
+            GenerateTypeOne();
+        else
+            GenerateTypeTwo();
     }
 
-    IEnumerator GenerateTypeOne()
+    private void GenerateTypeOne()
     {
         //_ingredient.AddComponent<SphereCollider>();
         //_ingredient.AddComponent<Rigidbody>();
         //무더기생성
         // _ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
-        int i = 0;
-        while (i < 10)
+        
+        float boundary;
+        Vector3 positionCache;
+
+        for (int i = 0; i < 64; i++) 
         {
-            Instantiate(_ingredient, transform.position, transform.rotation);
-            yield return new WaitForSeconds(0.2f);
-            i++;
+            positionCache = transform.position;
+            boundary = 3f - Random.Range(0f, 6f);
+            positionCache.x += boundary;
+            boundary = 3f - Random.Range(0f, 6f);
+            positionCache.z += boundary;
+            boundary = 3f - Random.Range(0f, 6f);
+            positionCache.y += boundary;
+
+            Instantiate(_ingredient, positionCache, transform.rotation);
         }
     }
+
     public void GenerateTypeTwo()
     {
         //raycast 로 한개 생성
