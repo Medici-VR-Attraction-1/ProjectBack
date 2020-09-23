@@ -12,66 +12,40 @@ public class IngredientDispenser : MonoBehaviour
     [SerializeField]
     private bool IsInstantiateAll = true;
 
-    private GameObject hand;
-
-
-
-
     private void Start()
     {
         _ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
 
-        //Instantiate(_ingredient, transform.position, transform.rotation);
-
         if (IsInstantiateAll)
-            GenerateTypeOne();
+            GenerateIngredientsAll();
         else
-            GenerateTypeTwo();
+            GenerateIngredientAsync();
     }
 
-    private void GenerateTypeOne()
+    private void GenerateIngredientsAll()
     {
-        //무더기생성
-
-        //_ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
-        //for (int i = 0; i < 64; i++)
-        //{
-        //    positionCache = transform.position;
-        //    boundary = 3f - Random.Range(0f, 6f);
-        //    positionCache.x += boundary;
-        //    boundary = 3f - Random.Range(0f, 6f);
-        //    positionCache.z += boundary;
-        //    boundary = 3f - Random.Range(0f, 6f);
-        //    positionCache.y += boundary;
-        //    Instantiate(_ingredient, positionCache, transform.rotation);
-        //}
-
         Vector3 positionCache;
         positionCache = transform.position;
-        float boundary;
 
         for (int i = 0; i < 4; i++)
         {
             positionCache.x = transform.position.x;
             positionCache.z = transform.position.z;
-            positionCache.y += 1.5f + Random.Range(-0.5f, 0.5f);
-            Instantiate(_ingredient, positionCache, transform.rotation);
-            for (int j = 0; j < 3; j++)
+            positionCache.y += 1.5f;
+            for (int j = 0; j < 4; j++)
             {
                 positionCache.x = transform.position.x;
-                positionCache.z += 1.5f + Random.Range(-0.5f, 0.5f);
-                Instantiate(_ingredient, positionCache, transform.rotation);
-                for (int k = 0; k < 3; k++)
+                positionCache.z += 1.5f;
+                for (int k = 0; k < 4; k++)
                 {
-                    positionCache.x += 1.5f + Random.Range(-0.5f, 0.5f);
-                    Instantiate(_ingredient, positionCache, transform.rotation);
+                    positionCache.x += 1.5f;
+                    Instantiate(_ingredient, positionCache * Random.Range(1.0f, 1.02f), transform.rotation);
                 }
             }
-
         }
     }
 
-    public void GenerateTypeTwo()
+    public void GenerateIngredientAsync()
     {
         //raycast 로 한개 생성
         // dispenserObject = GameObject.FindWithTag("Dispenser");
