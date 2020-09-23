@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6904725534078196628}
   - component: {fileID: 4506257376098220409}
   - component: {fileID: 3135753055543923192}
-  - component: {fileID: -5413675220328978325}
+  - component: {fileID: 1654394392122398885}
   m_Layer: 0
   m_Name: Ingredient_2
   m_TagString: Dispenser
@@ -89,16 +89,16 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4708609958073645180}
   serializedVersion: 2
-  m_Mass: 50
+  m_Mass: 1
   m_Drag: 1
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &-5413675220328978325
-BoxCollider:
+--- !u!135 &1654394392122398885
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -108,5 +108,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

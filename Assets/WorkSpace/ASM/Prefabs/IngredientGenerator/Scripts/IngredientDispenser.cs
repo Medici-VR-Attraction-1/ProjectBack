@@ -31,25 +31,43 @@ public class IngredientDispenser : MonoBehaviour
 
     private void GenerateTypeOne()
     {
-        //_ingredient.AddComponent<SphereCollider>();
-        //_ingredient.AddComponent<Rigidbody>();
         //무더기생성
-        // _ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
-        
-        float boundary;
+
+        //_ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
+        //for (int i = 0; i < 64; i++)
+        //{
+        //    positionCache = transform.position;
+        //    boundary = 3f - Random.Range(0f, 6f);
+        //    positionCache.x += boundary;
+        //    boundary = 3f - Random.Range(0f, 6f);
+        //    positionCache.z += boundary;
+        //    boundary = 3f - Random.Range(0f, 6f);
+        //    positionCache.y += boundary;
+        //    Instantiate(_ingredient, positionCache, transform.rotation);
+        //}
+
         Vector3 positionCache;
+        positionCache = transform.position;
+        float boundary;
 
-        for (int i = 0; i < 64; i++) 
+        for (int i = 0; i < 4; i++)
         {
-            positionCache = transform.position;
-            boundary = 3f - Random.Range(0f, 6f);
-            positionCache.x += boundary;
-            boundary = 3f - Random.Range(0f, 6f);
-            positionCache.z += boundary;
-            boundary = 3f - Random.Range(0f, 6f);
-            positionCache.y += boundary;
-
+            positionCache.x = transform.position.x;
+            positionCache.z = transform.position.z;
+            positionCache.y += 1.5f + Random.Range(-0.5f, 0.5f);
             Instantiate(_ingredient, positionCache, transform.rotation);
+            for (int j = 0; j < 3; j++)
+            {
+                positionCache.x = transform.position.x;
+                positionCache.z += 1.5f + Random.Range(-0.5f, 0.5f);
+                Instantiate(_ingredient, positionCache, transform.rotation);
+                for (int k = 0; k < 3; k++)
+                {
+                    positionCache.x += 1.5f + Random.Range(-0.5f, 0.5f);
+                    Instantiate(_ingredient, positionCache, transform.rotation);
+                }
+            }
+
         }
     }
 
