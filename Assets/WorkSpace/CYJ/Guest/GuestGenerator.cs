@@ -4,50 +4,67 @@ using UnityEngine;
 
 public class GuestGenerator : MonoBehaviour
 {
+    private static Queue<GameObject> _chairQueue = new Queue<GameObject>();
+    public static void EnqueueChair(GameObject chair) { _chairQueue.Enqueue(chair); }
+    public static GameObject GetChair() { return _chairQueue.Dequeue(); }
+
+    private static Queue<GameObject> _guestQueue = new Queue<GameObject>();
+    public static void EnqueueGuest(GameObject guest) { _guestQueue.Enqueue(guest); }
+
+    [SerializeField]
+    private float CreatTime = 10f;
+
+    [SerializeField]
+    private GameObject GuestPrefab;
+
     
-    [SerializeField]
-    int GuestCountMax = 10;
-    [SerializeField]
-    float CreatTime = 10f;
-    [SerializeField]
-    GameObject GuestFactory;
+    //private float _currentTime = 0f;
+    private WaitForSeconds _guestSpawnRate = new WaitForSeconds(1.0f);
+    private bool _isEnabled;
 
-    private Queue<GameObject> _queue = new Queue<GameObject>();
-    private float _currentTime;
-    
-    void Start()
+    #region MonoBehaivour Callbacks
+    private void OnEnable() { _isEnabled = true; }
+    private void OnDisable() { _isEnabled = false; }
+
+    private void Start()
     {
-        for (int i = 0; i < GuestCountMax; i++)
+        for (int i = 0; i < _chairQueue.Count; i++)
         {
-            GameObject _guest = Instantiate(GuestFactory);
-            _queue.Enqueue(_guest);
-            _guest.SetActive(false);
+            GameObject guest = Instantiate(GuestPrefab);
+            guest.SetActive(false);
         }
+        StartCoroutine(_SpawnGuest());
     }
 
-    void Update()
+    private void Update()
     {
-        _currentTime += Time.deltaTime;
-        if (_currentTime > CreatTime)
+        //_currentTime += Time.deltaTime;
+        //if (_currentTime > CreatTime)
+        //{
+        //    if(_guestQueue.Count != 0)
+        //    {
+        //        GameObject guest = _guestQueue.Dequeue();
+        //        guest.SetActive(true);
+        //        guest.transform.position = transform.position;
+        //    }
+        //    _currentTime = 0;
+        //}
+    }
+    #endregion
+
+    private IEnumerator _SpawnGuest()
+    {
+        while (this._isEnabled)
         {
-            GetGuest();
-            _currentTime = 0;
+            if(_guestQueue.Count != 0)
+            {
+                GameObject guest = _guestQueue.Dequeue();
+                guest.transform.position = transform.position;
+                guest.SetActive(true);
+            }
+
+            yield return _guestSpawnRate;
         }
-
-    }
-
-    private void GetGuest() // 손님을 큐에서 가져오는 함수
-    {
-        if (_queue.Count == 0)
-            return;
-
-        GameObject _guest = _queue.Dequeue();
-        _guest.transform.position = this.transform.position;
-        _guest.SetActive(true);
-    }
-    private void ReturnGuest(GameObject guest) // 손님을 큐에 반환하는 함수
-    {
-        _queue.Enqueue(guest);
-        guest.SetActive(false);
+        yield return null;
     }
 }

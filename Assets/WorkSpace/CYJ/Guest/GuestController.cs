@@ -23,39 +23,33 @@ public class GuestController : MonoBehaviour
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
     }
-    private void Start()
-    {
 
-    }
     private void OnEnable()
     {
+        _navMeshAgent.enabled = false;
+        _navMeshAgent.enabled = true;
         SetTarget();
     }
 
     private void OnDisable()
     {
-        Target = null;
-    }
-
-    void SetTarget()
-    {
-        if (Target == null && Chair.ChairQueue.Count > 0)
-        {
-            Target = Chair.ChairQueue.Dequeue();
-            Chair.ChairQueue.Enqueue(Target);
-            _navMeshAgent.speed = 3.5f;
-            _navMeshAgent.SetDestination(Target.transform.position
-                                     + Target.transform.forward * targetDistanceOffset);
-            StartCoroutine(_MoveToChair());
-        }
+        GuestGenerator.EnqueueChair(Target);
+        GuestGenerator.EnqueueGuest(this.gameObject);
     }
 
     private void Update()
     {
-        if (Target == null)
-        {
-            SetTarget();
-        }
+
+    }
+
+    private void SetTarget()
+    {
+        Target = GuestGenerator.GetChair();
+        _navMeshAgent.speed = 3.5f;
+        _navMeshAgent.isStopped = false;
+        _navMeshAgent.SetDestination(Target.transform.position
+                                    + Target.transform.forward * targetDistanceOffset);
+        StartCoroutine(_MoveToChair());
     }
 
     private IEnumerator _MoveToChair()
@@ -65,14 +59,7 @@ public class GuestController : MonoBehaviour
             yield return _pathFindRate;
         }
         _navMeshAgent.isStopped = true;
-        StartCoroutine(_SlowRotate());
-        _animator.SetTrigger("Sit");
 
-        yield return null;
-    }
-
-    private IEnumerator _SlowRotate()
-    {
         for (int i = 0; i < 120; i++)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation,
@@ -80,8 +67,8 @@ public class GuestController : MonoBehaviour
                                            Time.deltaTime * 10f);
             yield return _rotationRate;
         }
+        //_animator.SetTrigger("Sit");
+
         yield return null;
     }
-    int i;
-
 }

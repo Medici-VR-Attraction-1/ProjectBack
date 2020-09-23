@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class Chair : MonoBehaviour
 {
-    public static Queue<GameObject> ChairQueue = new Queue<GameObject>();
-
-    void Start()
+    private void Awake()
     {
-        ChairQueue.Enqueue(this.gameObject);
+        GuestGenerator.EnqueueChair(this.gameObject);
     }
-
 }
