@@ -9,6 +9,10 @@ public class IngredientDispenser : MonoBehaviour
     [SerializeField]
     private GameObject dispenserObject;
 
+    private GameObject hand;
+
+
+
 
     private void Start()
     {
@@ -16,8 +20,8 @@ public class IngredientDispenser : MonoBehaviour
 
         //Instantiate(_ingredient, transform.position, transform.rotation);
 
-        StartCoroutine("GenerateTypeOne");
-        //  GenerateTypeTwo();
+        // StartCoroutine("GenerateTypeOne");
+        GenerateTypeTwo();
     }
 
     IEnumerator GenerateTypeOne()
@@ -36,14 +40,25 @@ public class IngredientDispenser : MonoBehaviour
     }
     public void GenerateTypeTwo()
     {
-        //한개씩 생성
+        //raycast 로 한개 생성
         // dispenserObject = GameObject.FindWithTag("Dispenser");
-        Collider[] col = Physics.OverlapSphere(dispenserObject.transform.position, 1f);
-        if (col != null && col[0].gameObject.name.Contains("hand"))
+
+        Collider[] col = Physics.OverlapSphere(dispenserObject.transform.position, 5f);
+        if (col != null)
         {
-            print("col");
-            Instantiate(_ingredient, col[0].transform.position, col[0].transform.rotation);
-            _ingredient.AddComponent<BoxCollider>();
+            print(col.Length);
+            for (int i = 0; i < col.Length; i++)
+            {
+                if (col[i].gameObject.name.Contains("hand"))
+                {
+                    print("hand collider chdeck");
+                    // Instantiate(_ingredient, col[i].transform.position, col[i].transform.rotation);
+                    Instantiate(_ingredient, transform.position, transform.rotation);
+                    _ingredient.GetComponent<Rigidbody>().useGravity = enabled;
+                    return;
+                }
+            }
+            // _ingredient.AddComponent<BoxCollider>();
             return;
         }
     }
