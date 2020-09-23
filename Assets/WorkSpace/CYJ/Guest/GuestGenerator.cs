@@ -19,7 +19,7 @@ public class GuestGenerator : MonoBehaviour
 
     
     //private float _currentTime = 0f;
-    private WaitForSeconds _guestSpawnRate = new WaitForSeconds(1.0f);
+    private WaitForSeconds _guestSpawnRate = new WaitForSeconds(2.0f);
     private bool _isEnabled;
 
     #region MonoBehaivour Callbacks
@@ -67,4 +67,6 @@ public class GuestGenerator : MonoBehaviour
         }
         yield return null;
     }
+
+    
 }

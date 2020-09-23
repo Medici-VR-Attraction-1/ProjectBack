@@ -6,6 +6,13 @@ using Valve.VR;
 
 public class GuestController : MonoBehaviour
 {
+    private enum State 
+    {
+        Enter,
+        Order,
+        Leave
+    }
+    State state;
 
     [SerializeField]
     private GameObject Target;
@@ -18,6 +25,9 @@ public class GuestController : MonoBehaviour
     private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
     private WaitForSeconds _pathFindRate = new WaitForSeconds(0.1f);
 
+
+
+
     private void Awake()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
@@ -26,6 +36,7 @@ public class GuestController : MonoBehaviour
 
     private void OnEnable()
     {
+        state = State.Enter;
         _navMeshAgent.enabled = false;
         _navMeshAgent.enabled = true;
         SetTarget();
@@ -39,7 +50,19 @@ public class GuestController : MonoBehaviour
 
     private void Update()
     {
+        switch (state)
+        {
+            case State.Enter:
+                break;
+            case State.Order: Order();
+                break;
+            case State.Leave: 
+                WalkToDoor();
+                if (Vector3.Distance(this.transform.position,Target.transform.position) < 0.1f)
+                { LeaveStore(); }      
+                break;
 
+        }
     }
 
     private void SetTarget()
@@ -68,7 +91,28 @@ public class GuestController : MonoBehaviour
             yield return _rotationRate;
         }
         //_animator.SetTrigger("Sit");
-
+        
         yield return null;
+        state = State.Order;
+    }
+
+    private void Order()
+    {
+        print("주문상태");
+        state = State.Leave;
+    }
+    
+    private void WalkToDoor()
+    {
+        _navMeshAgent.isStopped = false;
+        Target = GameObject.Find("GuestGenerator");
+        _navMeshAgent.SetDestination(Target.transform.position);
+        _navMeshAgent.speed = 3.5f;
+    }
+    private void LeaveStore()
+    {
+        this.gameObject.SetActive(false);
+        GuestGenerator.EnqueueGuest(this.gameObject);
+        print("가게 나가기 완료");
     }
 }
