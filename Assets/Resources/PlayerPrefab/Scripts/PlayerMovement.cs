@@ -1,33 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    public void SetInputVector(Vector3 inputVector) { _inputVector = inputVector.normalized; }
-
     [SerializeField]
-    private float PlayerMoveSpeed = 1.0f;
+    private float MoveSpeed = 1.0f;
 
-    private Rigidbody _rigidbody = null;
-    private Vector3 _inputVector = Vector3.zero;
+    private CharacterController _characterController = null;
+    private PlayerInputValue _targetValue = new PlayerInputValue();
+    private float _rotationHorizontalValue = 0f;
+
+    public void SetTargetMovement(PlayerInputValue playerInputValue)
+    {
+        _targetValue = playerInputValue;
+    }
 
     private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX 
-                           | RigidbodyConstraints.FreezeRotationZ;
+        _characterController = GetComponent<CharacterController>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        Vector3 nextDirection = _inputVector * Time.fixedDeltaTime * PlayerMoveSpeed;
-        _rigidbody.MovePosition(_rigidbody.position + nextDirection);
+        _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;
 
-        Vector3 lockedRotationEuler = Camera.main.transform.rotation.eulerAngles;
-        lockedRotationEuler.x = 0;
-        lockedRotationEuler.z = 0;
-        _rigidbody.rotation = Quaternion.Euler(lockedRotationEuler);
+        Vector3 nextMovement = transform.rotation * _targetValue.PositionInput * MoveSpeed;
+        Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);
+
+        _characterController.SimpleMove(nextMovement);
+        transform.rotation = Quaternion.Euler(nextRotation);
     }
 }

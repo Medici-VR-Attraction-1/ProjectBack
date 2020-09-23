@@ -1,38 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR;
 
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerInputController : MonoBehaviour
 {
+    private delegate void InputBinder();
+    private InputBinder InputBinderForUpdate = null;
+
     [SerializeField]
     private GameObject PlayerCamera = null;
 
     [SerializeField]
-    private float KMPlayerCameraRotateSpeed = 120.0f;
+    private float KMCameraRotationSpeed = 180f;
 
-    private delegate void InputHandler();
-    private InputHandler HandlePlayerInput;
-
+    private PlayerInputValue _currentInput = new PlayerInputValue();
     private PlayerMovement _playerMovement = null;
 
-    private float _rotateVertical = 0f;
-    private float _rotateHorizontal = 0f;
-
     #region MonoBehaviour Callbacks
-    private void Awake()
+    private void OnEnable()
     {
-        if (PlayerCamera == null)
-        {
-            Debug.Log("PlayerInputController : Player Camera is UnSet. Please Check Properties.");
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            PlayerCamera.tag = "MainCamera";
-        }
-        _playerMovement = GetComponent<PlayerMovement>();
+        _currentInput.PositionInput = Vector3.zero;
+        _currentInput.RotationInput = Vector3.zero;
 
         if (XRDevice.isPresent)
         {
@@ -40,45 +28,56 @@ public class PlayerInputController : MonoBehaviour
         }
         else
         {
-            HandlePlayerInput += new InputHandler(MovePlayerByKey);
-            HandlePlayerInput += new InputHandler(RotateCameraByMouse);
+            InputBinderForUpdate += new InputBinder(KMPositionInput);
+            InputBinderForUpdate += new InputBinder(KMRotationInput);
         }
     }
 
-    // Update is called once per frame
-    private void LateUpdate()
+    private void Start()
     {
-        HandlePlayerInput();
+        _playerMovement = GetComponent<PlayerMovement>();
+        if (_playerMovement == null || PlayerCamera == null)
+        {
+            Debug.Log("Player InputController : Components are Unset, Please Check Object");
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void Update()
+    {
+        InputBinderForUpdate();
+        _playerMovement.SetTargetMovement(_currentInput);
+    }
+
+    private void OnDisable()
+    {
+        InputBinderForUpdate = null;
     }
     #endregion
 
     #region Input Handler
-    private void MovePlayerByKey()
+    private void KMPositionInput()
     {
-        Vector3 inputVector = Vector3.zero;
-        inputVector += Input.GetAxisRaw("Vertical") * transform.forward;
-        inputVector += Input.GetAxisRaw("Horizontal") * transform.right;
-
-        _playerMovement.SetInputVector(inputVector);
+        _currentInput.PositionInput = new Vector3(Input.GetAxisRaw("Horizontal"), 
+                                            0, 
+                                            Input.GetAxisRaw("Vertical")).normalized;
     }
 
-    private void RotateCameraByMouse()
+    private void KMRotationInput()
     {
-        _rotateVertical -= Input.GetAxisRaw("Mouse Y") * KMPlayerCameraRotateSpeed * Time.deltaTime;
-        _rotateHorizontal += Input.GetAxisRaw("Mouse X") * KMPlayerCameraRotateSpeed * Time.deltaTime;
-        Vector3 rotateEuler = new Vector3(_rotateVertical, _rotateHorizontal, 0);
+        _currentInput.RotationInput = new Vector3(Input.GetAxisRaw("Mouse Y"), 
+                                            Input.GetAxisRaw("Mouse X"), 
+                                            0).normalized * KMCameraRotationSpeed;
 
-        PlayerCamera.transform.rotation = Quaternion.Euler(rotateEuler);
-    }
-
-    private void MovePlayerByKatWalk()
-    {
-
-    }
-
-    private void MovePlayerByTrackBall()
-    {
-
+        Vector3 cameraEulerAngleCache = PlayerCamera.transform.rotation.eulerAngles;
+        cameraEulerAngleCache.x -= _currentInput.RotationInput.x * Time.deltaTime;
+        PlayerCamera.transform.rotation = Quaternion.Euler(cameraEulerAngleCache);
     }
     #endregion
+}
+
+public struct PlayerInputValue
+{
+    public Vector3 PositionInput;
+    public Vector3 RotationInput;
 }
