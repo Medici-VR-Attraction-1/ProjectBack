@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
     }
 
+    // Apply Movement by Current Input
     private void Update()
     {
         _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;

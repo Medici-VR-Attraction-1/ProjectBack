@@ -22,6 +22,7 @@ public class PlayerInputController : MonoBehaviour
         _currentInput.PositionInput = Vector3.zero;
         _currentInput.RotationInput = Vector3.zero;
 
+        // Delegate : Bind Input by Controller Type
         if (XRDevice.isPresent)
         {
 
@@ -45,24 +46,29 @@ public class PlayerInputController : MonoBehaviour
 
     private void Update()
     {
+        // Delegate : Bind Input by Controller Type
         InputBinderForUpdate();
+
         _playerMovement.SetTargetMovement(_currentInput);
     }
 
     private void OnDisable()
     {
+        // Clear Delegate on Disabled
         InputBinderForUpdate = null;
     }
     #endregion
 
     #region Input Handler
+    // Update Player Position Input By Key and Mouse Controller
     private void KMPositionInput()
     {
         _currentInput.PositionInput = new Vector3(Input.GetAxisRaw("Horizontal"), 
                                             0, 
                                             Input.GetAxisRaw("Vertical")).normalized;
     }
-
+    
+    // Update Player Rotation Input By Key and Mouse Controller
     private void KMRotationInput()
     {
         _currentInput.RotationInput = new Vector3(Input.GetAxisRaw("Mouse Y"), 
