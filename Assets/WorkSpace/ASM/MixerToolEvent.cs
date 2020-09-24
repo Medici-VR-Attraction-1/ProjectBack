@@ -7,6 +7,9 @@ public class MixerToolEvent : MonoBehaviour
     [SerializeField, Range(0.01f, 1f)]
     private float CookingSpeed = 0.1f;
 
+    [SerializeField]
+    private GameObject Juice;
+
     private Dictionary<int, Transform> _ingredientTransform = new Dictionary<int, Transform>();
 
     // Start is called before the first frame update
@@ -25,14 +28,28 @@ public class MixerToolEvent : MonoBehaviour
     {
         if (_ingredientTransform.Count != 0)
         {
-            foreach (Transform targetTranfor in _ingredientTransform.Values)
+            foreach (Transform targetTranform in _ingredientTransform.Values)
             {
-                //크기가 줄어든다
-                //특정 크기 밑이 되면 삭제
 
+                if (targetTranform != null)
+                {
+                //크기가 줄어든다
+                targetTranform.localScale += new Vector3(-1, -1, -1) * Time.deltaTime * 0.8f;
+                //특정 크기 밑이 되면 삭제
+                if (targetTranform.localScale.y < 0.01)
+                {
+                    Destroy(targetTranform.gameObject);
+                    print("Destroy");
+                }
                 //가능하면 물색도 같이 바꿔주기 해당 재료색으로
+                Juice.GetComponentInChildren<MeshRenderer>().material.color = Color.Lerp(Juice.GetComponentInChildren<MeshRenderer>().material.color, targetTranform.GetComponent<MeshRenderer>().material.color, Time.deltaTime * 3);
+                // 액체를 채워줍시다     
+                    Vector3 juiceEmty = Juice.transform.localScale;
+                    Vector3 juiceFull = juiceEmty + Vector3.up;
+                    Juice.transform.localScale = Vector3.Lerp(juiceEmty, juiceFull, Time.deltaTime);
+                }
             }
-            // 액체를 채워줍시다
+
         }
     }
 
