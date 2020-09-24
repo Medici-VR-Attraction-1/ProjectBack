@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using Valve.VR;
 
-public class GuestController : MonoBehaviour
+public class GuestAI : MonoBehaviour
 {
     private enum GuestState 
     {
         Moving,
         OrderPending,
-        LeaveRestaurant
+        Eating,
+        Leaving
     }
     GuestState state;
 
@@ -57,7 +58,10 @@ public class GuestController : MonoBehaviour
             case GuestState.OrderPending: 
                 Order();
                 break;
-            case GuestState.LeaveRestaurant: 
+            case GuestState.Eating:
+                eat();
+                break;
+            case GuestState.Leaving: 
                 WalkToDoor();
                 if (Vector3.Distance(this.transform.position,_spawnPosition) < 1f)
                 { LeaveStore(); }      
@@ -69,7 +73,6 @@ public class GuestController : MonoBehaviour
     private void SetTarget()
     {
         Target = GuestGenerator.GetChair();
-        Debug.Log(Target.name);
         _navMeshAgent.isStopped = false;
         _navMeshAgent.SetDestination(Target.transform.position
                                     + Target.transform.forward * targetDistanceOffset);
@@ -99,7 +102,13 @@ public class GuestController : MonoBehaviour
 
     private void Order()
     {
-        state = GuestState.LeaveRestaurant;
+        print("주문합니다");
+        state = GuestState.Eating;
+    }
+    private void eat()
+    {
+        print("먹습니다");
+        state = GuestState.Leaving;
     }
     
     private void WalkToDoor()
