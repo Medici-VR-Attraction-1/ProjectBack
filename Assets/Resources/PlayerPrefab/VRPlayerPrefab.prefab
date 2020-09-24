@@ -246,7 +246,7 @@ GameObject:
   - component: {fileID: 7065272209421314376}
   m_Layer: 0
   m_Name: VRPlayerPrefab
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -368,6 +368,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerCamera: {fileID: 1967959804541837956}
+  PlayerHandR: {fileID: 0}
+  PlayerHandL: {fileID: 0}
   KMCameraRotationSpeed: 120
 --- !u!136 &2647586304879039135
 CapsuleCollider:

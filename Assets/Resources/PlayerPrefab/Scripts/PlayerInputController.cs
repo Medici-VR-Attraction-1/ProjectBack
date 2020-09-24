@@ -18,16 +18,17 @@ public class PlayerInputController : MonoBehaviour
     private GameObject PlayerHandL = null;
 
     [SerializeField]
-    private GameObject TargetTemp = null;
-
-    [SerializeField]
     private float KMCameraRotationSpeed = 180f;
 
     private PlayerInputValue _currentInput = new PlayerInputValue();
     private PlayerMovement _playerMovement = null;
     private PlayerHandAction _leftHandAction = null;
     private PlayerHandAction _rightHandAction = null;
+    private RaycastHit _cameraRaycastHitInfo = new RaycastHit();
+    private GameObject _lookTarget = null;
 
+    private readonly Vector3 _viewportMiddelPoint = new Vector3(0.5f, 0.5f, 0);
+    
     #region MonoBehaviour Callbacks
     private void OnEnable()
     {
@@ -62,6 +63,23 @@ public class PlayerInputController : MonoBehaviour
 
     private void Update()
     {
+        Ray cameraRay = Camera.main.ViewportPointToRay(_viewportMiddelPoint);
+        if (Physics.Raycast(cameraRay, out _cameraRaycastHitInfo))
+        {
+            if (_cameraRaycastHitInfo.collider.tag == "Ingredient")
+            {
+                _lookTarget = _cameraRaycastHitInfo.collider.gameObject;
+            }
+            else
+            {
+                _lookTarget = null;
+            }
+        }
+        else
+        {
+            _lookTarget = null;
+        }
+
         // Delegate : Bind Input by Controller Type
         InputBinderForUpdate();
 
@@ -98,18 +116,23 @@ public class PlayerInputController : MonoBehaviour
 
     private void KMActionInput()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if(_lookTarget != null)
         {
-            if (!_leftHandAction.CheckHandUsing())
+            bool isCloseEnough = Vector3.Distance(transform.position, _lookTarget.transform.position) < 1.8f;
+
+            if (Input.GetButtonDown("Fire1") && isCloseEnough)
             {
-                _leftHandAction.ActiveHandAction(TargetTemp);
+                if (!_leftHandAction.CheckHandUsing())
+                {
+                    _leftHandAction.ActiveHandAction(_lookTarget);
+                }
             }
-        }
-        if(Input.GetButtonDown("Fire2"))
-        { 
-            if(!_rightHandAction.CheckHandUsing())
+            if (Input.GetButtonDown("Fire2") && isCloseEnough)
             {
-                _rightHandAction.ActiveHandAction(TargetTemp);
+                if (!_rightHandAction.CheckHandUsing())
+                {
+                    _rightHandAction.ActiveHandAction(_lookTarget);
+                }
             }
         }
     }

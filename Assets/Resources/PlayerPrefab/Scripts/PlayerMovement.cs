@@ -24,11 +24,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;
+        Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);
+        transform.rotation = Quaternion.Euler(nextRotation);
 
         Vector3 nextMovement = transform.rotation * _targetValue.PositionInput * MoveSpeed;
-        Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);
-
         _characterController.SimpleMove(nextMovement);
-        transform.rotation = Quaternion.Euler(nextRotation);
     }
 }
