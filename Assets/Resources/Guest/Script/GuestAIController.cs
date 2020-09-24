@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using Valve.VR;
 
-public class GuestAI : MonoBehaviour
+public class GuestAIController : MonoBehaviour
 {
     private enum GuestState 
     {
@@ -26,6 +27,7 @@ public class GuestAI : MonoBehaviour
     private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
     private WaitForSeconds _pathFindRate = new WaitForSeconds(0.1f);
     private Vector3 _spawnPosition = Vector3.zero;
+    private Chair _chair = null;
 
     private void Awake()
     {
@@ -56,7 +58,7 @@ public class GuestAI : MonoBehaviour
             case GuestState.Moving:
                 break;
             case GuestState.OrderPending: 
-                Order();
+                OrderPending();
                 break;
             case GuestState.Eating:
                 eat();
@@ -73,6 +75,8 @@ public class GuestAI : MonoBehaviour
     private void SetTarget()
     {
         Target = GuestGenerator.GetChair();
+        _chair = Target.GetComponent<Chair>();
+
         _navMeshAgent.isStopped = false;
         _navMeshAgent.SetDestination(Target.transform.position
                                     + Target.transform.forward * targetDistanceOffset);
@@ -100,10 +104,12 @@ public class GuestAI : MonoBehaviour
         yield return null;
     }
 
-    private void Order()
+    private void OrderPending()
     {
-        print("주문합니다");
-        state = GuestState.Eating;
+        GameObject dish = null;
+        _chair.CheckDish(out dish);
+
+        if (dish != null) state = GuestState.Eating;
     }
     private void eat()
     {
