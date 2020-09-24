@@ -5,9 +5,6 @@ using UnityEngine.XR;
 
 public class PlayerHandAction : MonoBehaviour
 {
-    private delegate void ActionHandler(GameObject target);
-    private ActionHandler PlayerHandActionBinder = null;
-
     [SerializeField]
     private GameObject HandJoint = null;
 
@@ -15,38 +12,21 @@ public class PlayerHandAction : MonoBehaviour
     private int HandAnimationSpeed = 10;
 
     private bool _isHandUsing = false;
+    private GameObject _grabTarget = null;
     private WaitForSeconds _grabTargetRate = new WaitForSeconds(0.01f);
-    private Rigidbody _rigidbody = null;
-
-    public void ActiveHandAction(GameObject target)
-    {
-        PlayerHandActionBinder(target);
-    }
 
     public bool CheckHandUsing() { return _isHandUsing; }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-    }
-
-    private void OnEnable()
-    {
-        if(XRDevice.isPresent)
-        {
-
-        }
-        else
-        {
-            PlayerHandActionBinder += new ActionHandler(KMPlayerHandAction);
-        }
-    }
-
-    private void KMPlayerHandAction(GameObject target)
+    public void KMPlayerGrabHandAction(GameObject target)
     {
         _isHandUsing = true;
         StartCoroutine(_GrabTarget(target));
+    }
+
+    public void KMPlayerPutHandAction(Vector3 point)
+    {
+        _isHandUsing = false;
+        StartCoroutine(_PutTarget(point));
     }
 
     private IEnumerator _GrabTarget(GameObject target)
@@ -70,8 +50,35 @@ public class PlayerHandAction : MonoBehaviour
             }
             yield return _grabTargetRate;
         }
+
+        transform.position = HandJoint.transform.position;
+        _isHandUsing = true;
+        _grabTarget = target;
+        yield return null;
+    }
+
+    private IEnumerator _PutTarget(Vector3 point)
+    {
+        float animationOffset = 1f / (float)HandAnimationSpeed;
+        Vector3 distance;
+
+        for (int i = 0; i < HandAnimationSpeed; i++)
+        {
+            Debug.Log(gameObject.name);
+            distance = point - transform.position;
+            transform.position += Vector3.Lerp(Vector3.zero, distance, animationOffset) * Mathf.Sin(i * animationOffset * 6f);
+
+            if (i == HandAnimationSpeed / 2)
+            {
+                _grabTarget.transform.SetParent(null);
+                _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
+            }
+            yield return _grabTargetRate;
+        }
+
         transform.position = HandJoint.transform.position;
         _isHandUsing = false;
+        _grabTarget = null;
         yield return null;
     }
 }
