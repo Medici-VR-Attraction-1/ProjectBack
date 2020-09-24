@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using Valve.VR;
 
-public class GuestController : MonoBehaviour
+public class GuestAIController : MonoBehaviour
 {
     private enum GuestState 
     {
         Moving,
         OrderPending,
-        LeaveRestaurant
+        Eating,
+        Leaving
     }
     GuestState state;
 
@@ -25,6 +27,7 @@ public class GuestController : MonoBehaviour
     private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
     private WaitForSeconds _pathFindRate = new WaitForSeconds(0.1f);
     private Vector3 _spawnPosition = Vector3.zero;
+    private Chair _chair = null;
 
     private void Awake()
     {
@@ -55,9 +58,12 @@ public class GuestController : MonoBehaviour
             case GuestState.Moving:
                 break;
             case GuestState.OrderPending: 
-                Order();
+                OrderPending();
                 break;
-            case GuestState.LeaveRestaurant: 
+            case GuestState.Eating:
+                eat();
+                break;
+            case GuestState.Leaving: 
                 WalkToDoor();
                 if (Vector3.Distance(this.transform.position,_spawnPosition) < 1f)
                 { LeaveStore(); }      
@@ -69,7 +75,8 @@ public class GuestController : MonoBehaviour
     private void SetTarget()
     {
         Target = GuestGenerator.GetChair();
-        Debug.Log(Target.name);
+        _chair = Target.GetComponent<Chair>();
+
         _navMeshAgent.isStopped = false;
         _navMeshAgent.SetDestination(Target.transform.position
                                     + Target.transform.forward * targetDistanceOffset);
@@ -97,9 +104,17 @@ public class GuestController : MonoBehaviour
         yield return null;
     }
 
-    private void Order()
+    private void OrderPending()
     {
-        state = GuestState.LeaveRestaurant;
+        GameObject dish = null;
+        _chair.CheckDish(out dish);
+
+        if (dish != null) state = GuestState.Eating;
+    }
+    private void eat()
+    {
+        print("먹습니다");
+        state = GuestState.Leaving;
     }
     
     private void WalkToDoor()

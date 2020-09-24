@@ -4,8 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Ingredient
-  - Dispenser
+  - Result
   layers:
   - Default
   - TransparentFX
