@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
-  targetDistanceOffset: 0.5
+  targetDistanceOffset: 0.75
 --- !u!195 &6612715700690548574
 NavMeshAgent:
   m_ObjectHideFlags: 0
