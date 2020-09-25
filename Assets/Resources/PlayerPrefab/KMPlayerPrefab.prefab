@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 8192012522592327123}
   - component: {fileID: 6001255475323791977}
   - component: {fileID: 7932868921732241867}
+  - component: {fileID: 2145173079914899842}
   m_Layer: 0
   m_Name: RHand
   m_TagString: Untagged
@@ -125,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HandJoint: {fileID: 6950710453963138312}
-  HandAnimationSpeed: 30
+  HandAnimationSpeed: 10
 --- !u!54 &7932868921732241867
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -142,6 +143,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!135 &2145173079914899842
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828519858072577342}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.101813674
+  m_Center: {x: -0.0163607, y: 0.0068951845, z: 0.074120164}
 --- !u!1 &1838800472647025868
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,6 +169,7 @@ GameObject:
   - component: {fileID: 1094292027689369032}
   - component: {fileID: 4005142714439140366}
   - component: {fileID: 8400783430747253265}
+  - component: {fileID: 7609608916492111337}
   m_Layer: 0
   m_Name: LHand
   m_TagString: Untagged
@@ -236,7 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HandJoint: {fileID: 799253489573728971}
-  HandAnimationSpeed: 30
+  HandAnimationSpeed: 10
 --- !u!54 &8400783430747253265
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -253,6 +268,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!135 &7609608916492111337
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838800472647025868}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.101813674
+  m_Center: {x: 0.0163607, y: 0.0068951845, z: 0.074120164}
 --- !u!1 &3588487561434263316
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +646,8 @@ MonoBehaviour:
   PlayerCamera: {fileID: 3784162833005984484}
   PlayerHandR: {fileID: 828519858072577342}
   PlayerHandL: {fileID: 1838800472647025868}
-  KMCameraRotationSpeed: 360
+  KMCameraRotationSpeed: 240
+  KMPlayerHandLenght: 1.5
 --- !u!143 &3068739485686594290
 CharacterController:
   m_ObjectHideFlags: 0

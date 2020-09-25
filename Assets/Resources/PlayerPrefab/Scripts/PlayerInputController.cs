@@ -20,17 +20,22 @@ public class PlayerInputController : MonoBehaviour
     [SerializeField]
     private float KMCameraRotationSpeed = 180f;
 
+    [SerializeField]
+    private float KMPlayerHandLenght = 1.0f;
+
     private PlayerInputValue _currentInput = new PlayerInputValue();
+
     private PlayerMovement _playerMovement = null;
     private PlayerHandAction _leftHandAction = null;
     private PlayerHandAction _rightHandAction = null;
-    private RaycastHit _cameraRaycastHitInfo = new RaycastHit();
-
-    private readonly Vector3 _viewportMiddelPoint = new Vector3(0.5f, 0.5f, 0);
+    private Camera _playerCameraComponent = null;
     
     #region MonoBehaviour Callbacks
     private void OnEnable()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         _currentInput.PositionInput = Vector3.zero;
         _currentInput.RotationInput = Vector3.zero;
 
@@ -50,14 +55,19 @@ public class PlayerInputController : MonoBehaviour
     private void Start()
     {
         _playerMovement = GetComponent<PlayerMovement>();
-        if (_playerMovement == null || PlayerCamera == null || PlayerHandR == null || PlayerHandL == null)
+        if (CheckComponentValue())
         {
             Debug.Log("Player InputController : Components are Unset, Please Check Object");
             gameObject.SetActive(false);
         }
 
-        _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
+        _playerCameraComponent = PlayerCamera.GetComponent<Camera>();
+
         _leftHandAction = PlayerHandL.GetComponent<PlayerHandAction>();
+        _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1");
+
+        _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
+        _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2");
     }
 
     private void Update()
@@ -72,6 +82,9 @@ public class PlayerInputController : MonoBehaviour
     {
         // Clear Delegate on Disabled
         InputBinderForUpdate = null;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
     #endregion
 
@@ -98,41 +111,43 @@ public class PlayerInputController : MonoBehaviour
 
     private void KMActionInput()
     {
-        Ray cameraRay = Camera.main.ViewportPointToRay(_viewportMiddelPoint);
+        Vector3 targetHandPoint = new Vector3(_playerCameraComponent.scaledPixelWidth / 2f,
+                                          _playerCameraComponent.scaledPixelHeight / 2f,
+                                          KMPlayerHandLenght);
+        targetHandPoint = _playerCameraComponent.ScreenToWorldPoint(targetHandPoint);
 
-        if (Physics.Raycast(cameraRay, out _cameraRaycastHitInfo))
+        if (Input.GetButtonDown("Fire1"))
         {
-            GameObject lookTarget = _cameraRaycastHitInfo.collider.gameObject;
-
-            bool isCloseEnough = Vector3.Distance(transform.position, lookTarget.transform.position) < 3.6f;
-
-            if (Input.GetButtonDown("Fire1") && isCloseEnough)
+            if(_leftHandAction.CheckHandUsing())
             {
-                if (!_leftHandAction.CheckHandUsing())
-                {
-                    if(lookTarget.tag == "Ingredient") 
-                        _leftHandAction.KMPlayerGrabHandAction(lookTarget);
-                }
-                else
-                {
-                    _leftHandAction.KMPlayerPutHandAction(_cameraRaycastHitInfo.point);
-                }
+                _leftHandAction.KMPlayerPutAction(targetHandPoint);
             }
-            else if (Input.GetButtonDown("Fire2") && isCloseEnough)
+            else
             {
-                if (!_rightHandAction.CheckHandUsing())
-                {
-                    if (lookTarget.tag == "Ingredient")
-                        _rightHandAction.KMPlayerGrabHandAction(lookTarget);
-                }
-                else
-                {
-                    _rightHandAction.KMPlayerPutHandAction(_cameraRaycastHitInfo.point);
-                }
+                _leftHandAction.KMPlayerGrabAction(targetHandPoint);
+            }
+        }
+        else if(Input.GetButtonDown("Fire2"))
+        {
+            if (_rightHandAction.CheckHandUsing())
+            {
+                _rightHandAction.KMPlayerPutAction(targetHandPoint);
+            }
+            else
+            {
+                _rightHandAction.KMPlayerGrabAction(targetHandPoint);
             }
         }
     }
     #endregion
+
+    private bool CheckComponentValue()
+    {
+        return _playerMovement == null
+            || PlayerCamera == null
+            || PlayerHandR == null
+            || PlayerHandL == null;
+    }
 }
 
 public struct PlayerInputValue
