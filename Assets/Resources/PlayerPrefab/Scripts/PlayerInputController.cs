@@ -29,7 +29,8 @@ public class PlayerInputController : MonoBehaviour
     private PlayerHandAction _leftHandAction = null;
     private PlayerHandAction _rightHandAction = null;
     private Camera _playerCameraComponent = null;
-    
+    private float _verticalRotationAmount = 0f;
+
     #region MonoBehaviour Callbacks
     private void OnEnable()
     {
@@ -63,11 +64,14 @@ public class PlayerInputController : MonoBehaviour
 
         _playerCameraComponent = PlayerCamera.GetComponent<Camera>();
 
+        // Just KM Player
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         _leftHandAction = PlayerHandL.GetComponent<PlayerHandAction>();
-        _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1");
+        _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
 
         _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
-        _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2");
+        _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     private void Update()
@@ -105,10 +109,13 @@ public class PlayerInputController : MonoBehaviour
                                             0).normalized * KMCameraRotationSpeed;
 
         Vector3 cameraEulerAngleCache = PlayerCamera.transform.rotation.eulerAngles;
-        cameraEulerAngleCache.x -= _currentInput.RotationInput.x * Time.deltaTime;
+        _verticalRotationAmount -= _currentInput.RotationInput.x * Time.deltaTime * 0.8f;
+        _verticalRotationAmount = Mathf.Clamp(_verticalRotationAmount, -75f, 75f);
+        cameraEulerAngleCache.x = _verticalRotationAmount;
         PlayerCamera.transform.rotation = Quaternion.Euler(cameraEulerAngleCache);
     }
 
+    // Get Mouse Input And Handle Bind Action
     private void KMActionInput()
     {
         Vector3 targetHandPoint = new Vector3(_playerCameraComponent.scaledPixelWidth / 2f,
@@ -141,6 +148,7 @@ public class PlayerInputController : MonoBehaviour
     }
     #endregion
 
+    // Check Inspector Properties
     private bool CheckComponentValue()
     {
         return _playerMovement == null
@@ -150,6 +158,7 @@ public class PlayerInputController : MonoBehaviour
     }
 }
 
+// Player Input Format
 public struct PlayerInputValue
 {
     public Vector3 PositionInput;
