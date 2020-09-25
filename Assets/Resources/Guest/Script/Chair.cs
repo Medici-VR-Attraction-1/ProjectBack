@@ -4,13 +4,8 @@ using UnityEngine;
 
 public class Chair : MonoBehaviour
 {
-    private GameObject connectedDish = null;
+    private GameObject _connectedDish = null;
 
-    public void CheckDish(out GameObject dish)
-    {
-        dish = connectedDish;
-        connectedDish = null;
-    }
 
     private void Awake()
     {
@@ -21,7 +16,13 @@ public class Chair : MonoBehaviour
     {
         if(other.tag == "Result")
         {
-            connectedDish = other.gameObject;
+            _connectedDish = other.gameObject;
         }
+    }
+
+    public void CheckDish(out GameObject dish) // 음식오브젝트가 담긴 변수를 외부로 내보낸다
+    {
+        dish = _connectedDish;
+        _connectedDish = null;
     }
 }
