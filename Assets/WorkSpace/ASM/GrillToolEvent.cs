@@ -23,6 +23,7 @@ public class GrillToolEvent : MonoBehaviour
         GrillAction();
     }
 
+    //충돌한 오브젝트를 검은색으로 변형
     private void GrillAction()
     {
         if (_ingredientMeshRenderers.Count != 0)
