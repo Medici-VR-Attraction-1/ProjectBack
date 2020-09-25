@@ -12,73 +12,96 @@ public class PlayerHandAction : MonoBehaviour
     private int HandAnimationSpeed = 10;
 
     private bool _isHandUsing = false;
+    private bool _isHandMove = false;
     private GameObject _grabTarget = null;
-    private WaitForSeconds _grabTargetRate = new WaitForSeconds(0.01f);
+    private WaitForSeconds _handMoveRate = new WaitForSeconds(0.016f);
+
+    private float _handDistance = 1f;
+    private string _inputButtonName = "";
+    private Vector3 _moveAmount = Vector3.zero;
 
     public bool CheckHandUsing() { return _isHandUsing; }
 
-    public void KMPlayerGrabHandAction(GameObject target)
+    public void SetHandProperties(float handDistance, string buttonName)
     {
-        _isHandUsing = true;
-        StartCoroutine(_GrabTarget(target));
+        _handDistance = handDistance * handDistance;
+        _inputButtonName = buttonName;
     }
 
-    public void KMPlayerPutHandAction(Vector3 point)
+    #region Keyboad And Mouse Player Hand Input Action
+    public void KMPlayerGrabAction(Vector3 point)
     {
-        _isHandUsing = false;
-        StartCoroutine(_PutTarget(point));
+        Debug.Log(_inputButtonName);
+        if (!_isHandMove) StartCoroutine(_KMPlayerGrapAction(point));
+        _isHandMove = true;
     }
 
-    private IEnumerator _GrabTarget(GameObject target)
+    private IEnumerator _KMPlayerGrapAction(Vector3 point)
     {
-        float animationOffset = 1f / (float)HandAnimationSpeed;
-        Vector3 distance;
-        Vector3 originalTargetPosition = target.transform.position;
+        Vector3 movement;
+        transform.LookAt(point);
 
-        for(int i = 0; i < HandAnimationSpeed; i++)
+        while(Input.GetButton(_inputButtonName) && _moveAmount.sqrMagnitude < _handDistance)
         {
-            Debug.Log(gameObject.name);
-            distance = originalTargetPosition - transform.position;
-            transform.position += Vector3.Lerp(Vector3.zero, distance, animationOffset) * Mathf.Sin(i * animationOffset * 6f);
-
-            if (i == HandAnimationSpeed / 2)
-            {
-                target.GetComponent<Rigidbody>().isKinematic = true;
-                target.transform.SetParent(transform);
-                target.transform.position = transform.position;
-                target.transform.rotation = transform.rotation;
-            }
-            yield return _grabTargetRate;
+            movement = transform.forward * Time.deltaTime * HandAnimationSpeed;
+            transform.position += movement;
+            _moveAmount += movement;
+            yield return _handMoveRate;
         }
 
-        transform.position = HandJoint.transform.position;
-        _isHandUsing = true;
-        _grabTarget = target;
-        yield return null;
-    }
-
-    private IEnumerator _PutTarget(Vector3 point)
-    {
-        float animationOffset = 1f / (float)HandAnimationSpeed;
-        Vector3 distance;
-
-        for (int i = 0; i < HandAnimationSpeed; i++)
+        while(Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
         {
-            Debug.Log(gameObject.name);
-            distance = point - transform.position;
-            transform.position += Vector3.Lerp(Vector3.zero, distance, animationOffset) * Mathf.Sin(i * animationOffset * 6f);
-
-            if (i == HandAnimationSpeed / 2)
-            {
-                _grabTarget.transform.SetParent(null);
-                _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
-            }
-            yield return _grabTargetRate;
+            transform.position = Vector3.Lerp(transform.position, HandJoint.transform.position, 0.5f);
+            yield return _handMoveRate;
         }
 
-        transform.position = HandJoint.transform.position;
+        _moveAmount = Vector3.zero;
+        _isHandMove = false;
+    }
+
+    public void KMPlayerPutAction(Vector3 point)
+    {
+        if (!_isHandMove) StartCoroutine(_KMPlayerPutAction(point));
+        _isHandMove = true;
+    }
+
+    private IEnumerator _KMPlayerPutAction(Vector3 point)
+    {
+        Vector3 movement;
+        transform.LookAt(point);
+
+        while (Input.GetButton(_inputButtonName) && _moveAmount.sqrMagnitude < _handDistance)
+        {
+            movement = transform.forward * Time.deltaTime * HandAnimationSpeed;
+            transform.position += movement;
+            _moveAmount += movement;
+            yield return _handMoveRate;
+        }
+        ///
+        _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
+        _grabTarget.transform.SetParent(null);
         _isHandUsing = false;
-        _grabTarget = null;
+        ///
+        while (Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
+        {
+            transform.position = Vector3.Lerp(transform.position, HandJoint.transform.position, 0.5f);
+            yield return _handMoveRate;
+        }
+
+        _moveAmount = Vector3.zero;
+        _isHandMove = false;
         yield return null;
+    }
+    #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Ingredient")
+        {
+            _grabTarget = other.gameObject;
+            _grabTarget.GetComponent<Rigidbody>().isKinematic = true;
+            _grabTarget.transform.SetParent(transform);
+            _isHandUsing = true;
+        }
     }
 }
