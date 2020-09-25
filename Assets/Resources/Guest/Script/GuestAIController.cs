@@ -16,8 +16,8 @@ public class GuestAIController : MonoBehaviour
     }
     GuestState state;
 
-    [SerializeField]
-    private GameObject Target;
+
+    private GameObject target;
 
     [SerializeField, Range(0.5f, 1.5f)]
     private float targetDistanceOffset = 1.0f;
@@ -35,7 +35,7 @@ public class GuestAIController : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
-    private void OnEnable()
+    private void OnEnable() 
     {
         state = GuestState.Moving;
         _navMeshAgent.enabled = false;
@@ -47,7 +47,7 @@ public class GuestAIController : MonoBehaviour
 
     private void OnDisable()
     {
-        GuestGenerator.EnqueueChair(Target);
+        GuestGenerator.EnqueueChair(target);
         GuestGenerator.EnqueueGuest(this.gameObject);
     }
 
@@ -72,30 +72,28 @@ public class GuestAIController : MonoBehaviour
         }
     }
 
-    private void SetTarget()
+    private void SetTarget() // 목적지를 의자로 설정한다
     {
-        Target = GuestGenerator.GetChair();
-        _chair = Target.GetComponent<Chair>();
+        target = GuestGenerator.GetChair();
+        _chair = target.GetComponent<Chair>();
 
         _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(Target.transform.position
-                                    + Target.transform.forward * targetDistanceOffset);
+        _navMeshAgent.SetDestination(target.transform.position
+                                    + target.transform.forward * targetDistanceOffset);
         StartCoroutine(_MoveToChair());
     }
 
-    private IEnumerator _MoveToChair()
+    private IEnumerator _MoveToChair() // 의자에 도착했는지 감지하고 의자와 손님의 각도를 일치시킨다
     {
         while (Vector3.Distance(this.transform.position, _navMeshAgent.destination) > Mathf.Epsilon)
         {
             yield return _pathFindRate;
         }
         _navMeshAgent.isStopped = true;
-
-        //_animator.SetTrigger("Sit");
         for (int i = 0; i < 120; i++)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation,
-                                           Target.transform.rotation,
+                                           target.transform.rotation,
                                            Time.deltaTime * 10f);
             yield return _rotationRate;
         }
@@ -104,26 +102,27 @@ public class GuestAIController : MonoBehaviour
         yield return null;
     }
 
-    private void OrderPending()
+    private void OrderPending() // 음식이 도착했는지 감지한다
     {
         GameObject dish = null;
         _chair.CheckDish(out dish);
 
-        if (dish != null) state = GuestState.Eating;
+        if (dish != null) 
+        state = GuestState.Eating;
     }
-    private void eat()
+    private void eat() // 먹는다
     {
         print("먹습니다");
         state = GuestState.Leaving;
     }
     
-    private void WalkToDoor()
+    private void WalkToDoor() // 처음 스폰되었던곳으로 돌아간다
     {
         _navMeshAgent.isStopped = false;
         _navMeshAgent.SetDestination(_spawnPosition);
     }
 
-    private void LeaveStore()
+    private void LeaveStore() // 나간다 (비활성화 시킨다)
     {
         this.gameObject.SetActive(false);
     }

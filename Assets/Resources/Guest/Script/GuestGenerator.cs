@@ -43,7 +43,7 @@ public class GuestGenerator : MonoBehaviour
     }
     #endregion
 
-    private IEnumerator _SpawnGuest()
+    private IEnumerator _SpawnGuest() // 일정시간마다 손님을 생성한다
     {
         while (this._isEnabled)
         {
@@ -53,7 +53,6 @@ public class GuestGenerator : MonoBehaviour
                 guest.transform.position = transform.position;
                 guest.SetActive(true);
             }
-
             yield return _guestSpawnRate;
         }
         yield return null;
