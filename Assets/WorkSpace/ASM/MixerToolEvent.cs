@@ -13,7 +13,8 @@ public class MixerToolEvent : MonoBehaviour
     private Dictionary<int, Transform> _ingredientTransform = new Dictionary<int, Transform>();
     private MeshRenderer _juiceMeshRenderer = null;
     private Color _originalColor;
-
+    private readonly Vector3 _ingredientScaleOffset = new Vector3(1f, 1f, 1f);
+    private readonly Vector3 _juiceScaleOffset = new Vector3(0f, 1f, 0f);
     // Start is called before the first frame update
     void Start()
     {
@@ -28,48 +29,45 @@ public class MixerToolEvent : MonoBehaviour
     {
         MixerAction();
     }
-    //재료: 크기 작아지고 삭제, 물: 차오르면서 재료색으로 변형
+
+    // Material: Delete when smaller 
+    // Water: Transforming into material color as it rises
     private void MixerAction()
     {
         if (_ingredientTransform.Count != 0)
         {
             foreach (Transform targetTranform in _ingredientTransform.Values)
             {
+                targetTranform.localScale -= _ingredientScaleOffset * Time.deltaTime * CookingSpeed;
 
-                if (targetTranform != null)
+                if (targetTranform.localScale.y < 0.01f)
                 {
-                    //크기가 줄어든다
-                    targetTranform.localScale += new Vector3(-1, -1, -1) * Time.deltaTime * CookingSpeed;
-                    //특정 크기 밑이 되면 삭제
-                    if (targetTranform.localScale.y < 0.01f)
-                    {
-                        Destroy(targetTranform.gameObject);
-                        print("Destroy");
-                    }
-                    //가능하면 물색도 같이 바꿔주기 해당 재료색으로
-                    _juiceMeshRenderer.material.color = Color.Lerp(_juiceMeshRenderer.material.color, targetTranform.GetComponent<MeshRenderer>().material.color, Time.deltaTime * CookingSpeed);
-                    // 액체를 채워줍시다     
-                    Vector3 juiceEmty = Juice.transform.localScale;
-                    Vector3 juiceFull = juiceEmty + Vector3.up;
-                    Juice.transform.localScale = Vector3.Lerp(juiceEmty, juiceFull, Time.deltaTime * CookingSpeed);
-
+                    // Issue: Collection Modified in Foreach Enurmarator
+                    _ingredientTransform.Remove(targetTranform.GetInstanceID());
+                    Destroy(targetTranform.gameObject);
                 }
-            }
 
+                _juiceMeshRenderer.material.color = Color.Lerp(_juiceMeshRenderer.material.color, 
+                                                       targetTranform.GetComponent<MeshRenderer>().material.color, 
+                                                       Time.deltaTime * CookingSpeed);
+
+                if(Juice.transform.localScale.y < 3f)
+                {
+                    Juice.transform.localScale += _juiceScaleOffset * Time.deltaTime * CookingSpeed;
+                }
+                else
+                {
+                    // Add: Juice Full Event Handler
+                } 
+            }
         }
     }
 
-    //충돌감지 
     private void OnCollisionEnter(Collision other)
     {
         if (other.transform.tag == "Ingredient")
         {
             _ingredientTransform[other.transform.GetInstanceID()] = other.transform;
         }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        _ingredientTransform.Remove(collision.transform.GetInstanceID());
     }
 }

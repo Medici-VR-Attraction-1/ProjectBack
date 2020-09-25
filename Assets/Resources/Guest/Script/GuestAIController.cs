@@ -1,129 +1,142 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 using Valve.VR;
 
 public class GuestAIController : MonoBehaviour
 {
-    private enum GuestState 
+    [SerializeField, Range(0.5f, 1.5f)]
+    private float targetDistanceOffset = 1.0f;
+
+    private enum GuestState
     {
         Moving,
         OrderPending,
         Eating,
         Leaving
     }
-    GuestState state;
-
-
-    private GameObject target;
-
-    [SerializeField, Range(0.5f, 1.5f)]
-    private float targetDistanceOffset = 1.0f;
+    private GuestState currentState;
 
     private NavMeshAgent _navMeshAgent;
     private Animator _animator;
-    private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
-    private WaitForSeconds _pathFindRate = new WaitForSeconds(0.1f);
-    private Vector3 _spawnPosition = Vector3.zero;
-    private Chair _chair = null;
+    
+    private GameObject _targetChair;
+    private Chair _chairComponentCache = null;
 
+    private Vector3 _spawnPositionCache = Vector3.zero;
+
+    private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
+
+    #region MonoBehaviour Callbacks
     private void Awake()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
     }
 
-    private void OnEnable() 
+    private void OnEnable()
     {
-        state = GuestState.Moving;
+        currentState = GuestState.Moving;
         _navMeshAgent.enabled = false;
         _navMeshAgent.enabled = true;
 
-        _spawnPosition = transform.position;
+        _spawnPositionCache = transform.position;
         SetTarget();
-    }
-
-    private void OnDisable()
-    {
-        GuestGenerator.EnqueueChair(target);
-        GuestGenerator.EnqueueGuest(this.gameObject);
     }
 
     private void Update()
     {
-        switch (state)
+        switch (currentState)
         {
+            //
             case GuestState.Moving:
+                MoveToChair();
                 break;
-            case GuestState.OrderPending: 
+            //
+            case GuestState.OrderPending:
                 OrderPending();
                 break;
+            //
             case GuestState.Eating:
-                eat();
+                EatDish();
                 break;
-            case GuestState.Leaving: 
+            //
+            case GuestState.Leaving:
                 WalkToDoor();
-                if (Vector3.Distance(this.transform.position,_spawnPosition) < 1f)
-                { LeaveStore(); }      
                 break;
-
         }
     }
+    #endregion
 
-    private void SetTarget() // 목적지를 의자로 설정한다
+    #region FSM Behaviour
+    // Sense if the chair has arrived and match the distance between the chair and the guest.
+    private void MoveToChair()
     {
-        target = GuestGenerator.GetChair();
-        _chair = target.GetComponent<Chair>();
-
-        _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(target.transform.position
-                                    + target.transform.forward * targetDistanceOffset);
-        StartCoroutine(_MoveToChair());
-    }
-
-    private IEnumerator _MoveToChair() // 의자에 도착했는지 감지하고 의자와 손님의 각도를 일치시킨다
-    {
-        while (Vector3.Distance(this.transform.position, _navMeshAgent.destination) > Mathf.Epsilon)
+        if (Vector3.Distance(this.transform.position, _navMeshAgent.destination) < Mathf.Epsilon)
         {
-            yield return _pathFindRate;
+            _navMeshAgent.isStopped = true;
+            StartCoroutine(_MoveToChair());
         }
-        _navMeshAgent.isStopped = true;
+    }
+    // Coroutine For Animation
+    private IEnumerator _MoveToChair()
+    {
+        // Rotate transform to Chiar Transform Forward
         for (int i = 0; i < 120; i++)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation,
-                                           target.transform.rotation,
+                                           _targetChair.transform.rotation,
                                            Time.deltaTime * 10f);
             yield return _rotationRate;
         }
 
-        state = GuestState.OrderPending;
+        currentState = GuestState.OrderPending;
         yield return null;
     }
 
-    private void OrderPending() // 음식이 도착했는지 감지한다
+    private void OrderPending()
     {
-        GameObject dish = null;
-        _chair.CheckDish(out dish);
+        GameObject dish;
+        _chairComponentCache.CheckDish(out dish);
 
-        if (dish != null) 
-        state = GuestState.Eating;
+        if (dish != null) currentState = GuestState.Eating;
     }
-    private void eat() // 먹는다
+
+    private void EatDish()
     {
-        print("먹습니다");
-        state = GuestState.Leaving;
+        // Eat Food
+        currentState = GuestState.Leaving;
     }
-    
-    private void WalkToDoor() // 처음 스폰되었던곳으로 돌아간다
+
+    private void WalkToDoor()
     {
         _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(_spawnPosition);
-    }
+        _navMeshAgent.SetDestination(_spawnPositionCache);
 
-    private void LeaveStore() // 나간다 (비활성화 시킨다)
-    {
-        this.gameObject.SetActive(false);
+        if (Vector3.Distance(this.transform.position, _spawnPositionCache) < 1f)
+        {
+            GuestGenerator.EnqueueChair(_targetChair);
+            GuestGenerator.EnqueueGuest(this.gameObject);
+            gameObject.SetActive(false);
+        }
     }
+    #endregion
+
+    #region Private Method
+    // Set the destination as a chair.
+    private void SetTarget()
+    {
+        _targetChair = GuestGenerator.DequeueChair();
+        _chairComponentCache = _targetChair.GetComponent<Chair>();
+
+        _navMeshAgent.isStopped = false;
+        _navMeshAgent.SetDestination(_targetChair.transform.position
+                               + _targetChair.transform.forward * targetDistanceOffset);
+
+        currentState = GuestState.Moving;
+    }
+    #endregion
 }

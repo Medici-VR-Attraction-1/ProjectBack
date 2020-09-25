@@ -4,23 +4,21 @@ using UnityEngine;
 
 public class IngredientDispenser : MonoBehaviour
 {
-    private GameObject _ingredient = null;
-
-    [SerializeField]
-    private GameObject dispenserObject;
+    private GameObject _ingredientPrefab = null;
 
     [SerializeField]
     private bool IsInstantiateAll = true;
 
     private void Start()
     {
-        _ingredient = IngredientGenerator.GetInstance().GetRandomIngredient();
+        _ingredientPrefab = IngredientGenerator.GetInstance().GetRandomIngredient();
 
         if (IsInstantiateAll)
             GenerateIngredientsAll();
         else
             GenerateIngredientAsync();
     }
+
     //4*4*4 형태로 재료 무더기 생성
     private void GenerateIngredientsAll()
     {
@@ -39,7 +37,9 @@ public class IngredientDispenser : MonoBehaviour
                 for (int k = 0; k < 4; k++)
                 {
                     positionCache.x += 1.5f;
-                    Instantiate(_ingredient, positionCache * Random.Range(1.0f, 1.02f), transform.rotation);
+                    Instantiate(_ingredientPrefab, 
+                             positionCache * Random.Range(1.0f, 1.02f), 
+                             transform.rotation);
                 }
             }
         }
@@ -47,26 +47,6 @@ public class IngredientDispenser : MonoBehaviour
 
     public void GenerateIngredientAsync()
     {
-        //raycast 로 한개 생성
-        // dispenserObject = GameObject.FindWithTag("Dispenser");
 
-        Collider[] col = Physics.OverlapSphere(dispenserObject.transform.position, 5f);
-        if (col != null)
-        {
-            print(col.Length);
-            for (int i = 0; i < col.Length; i++)
-            {
-                if (col[i].gameObject.name.Contains("hand"))
-                {
-                    print("hand collider chdeck");
-                    // Instantiate(_ingredient, col[i].transform.position, col[i].transform.rotation);
-                    Instantiate(_ingredient, transform.position, transform.rotation);
-                    _ingredient.GetComponent<Rigidbody>().useGravity = enabled;
-                    return;
-                }
-            }
-            // _ingredient.AddComponent<BoxCollider>();
-            return;
-        }
     }
 }

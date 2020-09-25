@@ -9,9 +9,9 @@ public class IngredientGenerator : MonoBehaviour
     public static IngredientGenerator GetInstance() { return _instance; }
 
     [SerializeField]
-    private List<GameObject> IngredientList;
+    private List<GameObject> IngredientPrefabList;
 
-    private GameObject[] _ingredientListCache;
+    private GameObject[] _ingredientPrefabListCache;
 
     private void Awake()
     {
@@ -23,23 +23,24 @@ public class IngredientGenerator : MonoBehaviour
         }
 
         _instance = this;
-        _ingredientListCache = IngredientList.ToArray();
+        _ingredientPrefabListCache = IngredientPrefabList.ToArray();
     }
-    //재료 리스트를 가져와서 랜덤으로 선택후 한번 쓰인것은 삭제되고 모두 삭제되면 임시 리스트에서 가져와서 선택
+
+    // Importing a list of materials, selecting them randomly return GameObject
+    // Once the written ones are deleted and list is Empty, 
+    // import them from the temporary list and select them.
     public GameObject GetRandomIngredient()
     {
-        if (IngredientList.Count == 0)
+        if (IngredientPrefabList.Count == 0)
         {
-            IngredientList = _ingredientListCache.ToList<GameObject>();
+            IngredientPrefabList = _ingredientPrefabListCache.ToList<GameObject>();
         }
 
-        int randomNumber = Random.Range(0, IngredientList.Count);
-        GameObject randomIngredient = IngredientList[randomNumber];
+        int randomNumber = Random.Range(0, IngredientPrefabList.Count);
 
-        IngredientList.RemoveAt(randomNumber);
-
+        GameObject randomIngredient = IngredientPrefabList[randomNumber];
+        IngredientPrefabList.RemoveAt(randomNumber);
+        
         return randomIngredient;
     }
-
-
 }

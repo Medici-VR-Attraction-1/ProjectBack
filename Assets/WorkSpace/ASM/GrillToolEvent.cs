@@ -26,20 +26,21 @@ public class GrillToolEvent : MonoBehaviour
     //충돌한 오브젝트를 검은색으로 변형
     private void GrillAction()
     {
-        if (_ingredientMeshRenderers.Count != 0)
+        if (_ingredientMeshRenderers.Count > 0)
         {
             Color colorCache;
             foreach (MeshRenderer meshRenderer in _ingredientMeshRenderers.Values)
             {
                 colorCache = meshRenderer.material.color;
-                meshRenderer.material.color = Color.Lerp(colorCache, targetColor, Time.deltaTime * CookingSpeed);
+                meshRenderer.material.color = Color.Lerp(colorCache, targetColor, 
+                                                   Time.deltaTime * CookingSpeed);
             }
         }
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.transform.tag == "Ingredient")
+        if (other.gameObject.tag == "Ingredient")
         {
             MeshRenderer ingredientMeshRenderer = other.gameObject.GetComponent<MeshRenderer>();
             _ingredientMeshRenderers[ingredientMeshRenderer.GetInstanceID()] = ingredientMeshRenderer;
