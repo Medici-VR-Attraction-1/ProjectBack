@@ -28,7 +28,7 @@ public class MixerToolEvent : MonoBehaviour
     {
         MixerAction();
     }
-
+    //재료: 크기 작아지고 삭제, 물: 차오르면서 재료색으로 변형
     private void MixerAction()
     {
         if (_ingredientTransform.Count != 0)
@@ -39,7 +39,7 @@ public class MixerToolEvent : MonoBehaviour
                 if (targetTranform != null)
                 {
                     //크기가 줄어든다
-                    targetTranform.localScale += new Vector3(-1, -1, -1) * Time.deltaTime * 0.8f;
+                    targetTranform.localScale += new Vector3(-1, -1, -1) * Time.deltaTime * CookingSpeed;
                     //특정 크기 밑이 되면 삭제
                     if (targetTranform.localScale.y < 0.01f)
                     {
@@ -47,17 +47,19 @@ public class MixerToolEvent : MonoBehaviour
                         print("Destroy");
                     }
                     //가능하면 물색도 같이 바꿔주기 해당 재료색으로
-                    _juiceMeshRenderer.material.color = Color.Lerp(_juiceMeshRenderer.material.color, targetTranform.GetComponent<MeshRenderer>().material.color, Time.deltaTime * 3f);
+                    _juiceMeshRenderer.material.color = Color.Lerp(_juiceMeshRenderer.material.color, targetTranform.GetComponent<MeshRenderer>().material.color, Time.deltaTime * CookingSpeed);
                     // 액체를 채워줍시다     
                     Vector3 juiceEmty = Juice.transform.localScale;
                     Vector3 juiceFull = juiceEmty + Vector3.up;
-                    Juice.transform.localScale = Vector3.Lerp(juiceEmty, juiceFull, Time.deltaTime);
+                    Juice.transform.localScale = Vector3.Lerp(juiceEmty, juiceFull, Time.deltaTime * CookingSpeed);
+
                 }
             }
 
         }
     }
 
+    //충돌감지 
     private void OnCollisionEnter(Collision other)
     {
         if (other.transform.tag == "Ingredient")

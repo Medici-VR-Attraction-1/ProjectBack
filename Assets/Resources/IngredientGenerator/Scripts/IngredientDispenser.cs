@@ -21,7 +21,7 @@ public class IngredientDispenser : MonoBehaviour
         else
             GenerateIngredientAsync();
     }
-
+    //4*4*4 형태로 재료 무더기 생성
     private void GenerateIngredientsAll()
     {
         Vector3 positionCache;
