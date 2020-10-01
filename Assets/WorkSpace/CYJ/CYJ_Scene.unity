@@ -612,7 +612,7 @@ PrefabInstance:
     - target: {fileID: 9181760415943567878, guid: 8d4c851ffa4c7a943a119d9f0569d10c,
         type: 3}
       propertyPath: GuestSpawnRate
-      value: 5.04
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9181760415943567879, guid: 8d4c851ffa4c7a943a119d9f0569d10c,
         type: 3}

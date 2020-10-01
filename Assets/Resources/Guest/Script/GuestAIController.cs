@@ -1,24 +1,18 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
-using Valve.VR;
 
 public class GuestAIController : MonoBehaviour
 {
-    [SerializeField, Range(0.5f, 1.5f)]
-    private float targetDistanceOffset = 1.0f;
-
-    private enum GuestState
+    // Public For Debug, Fix to Private After Release
+    public enum GuestState
     {
         Moving,
         OrderPending,
         Eating,
         Leaving
     }
-    private GuestState currentState;
+    public GuestState currentState;
 
     private NavMeshAgent _navMeshAgent;
     private Animator _animator;
@@ -39,31 +33,41 @@ public class GuestAIController : MonoBehaviour
 
     private void OnEnable()
     {
+        _spawnPositionCache = transform.position;
+
+        _targetChair = GuestGenerator.DequeueChair();
+        _chairComponentCache = _targetChair.GetComponent<Chair>();
+
         currentState = GuestState.Moving;
         _navMeshAgent.enabled = false;
         _navMeshAgent.enabled = true;
+        _navMeshAgent.SetDestination(_targetChair.transform.position);
+        _navMeshAgent.isStopped = false;
+    }
 
-        _spawnPositionCache = transform.position;
-        SetTarget();
+    private void OnDisable()
+    {
+        GuestGenerator.EnqueueChair(_targetChair);
+        _targetChair = null;
+        _chairComponentCache = null;
     }
 
     private void Update()
     {
         switch (currentState)
         {
-            //
             case GuestState.Moving:
                 MoveToChair();
                 break;
-            //
+
             case GuestState.OrderPending:
                 OrderPending();
                 break;
-            //
+
             case GuestState.Eating:
                 EatDish();
                 break;
-            //
+
             case GuestState.Leaving:
                 WalkToDoor();
                 break;
@@ -75,12 +79,14 @@ public class GuestAIController : MonoBehaviour
     // Sense if the chair has arrived and match the distance between the chair and the guest.
     private void MoveToChair()
     {
-        if (Vector3.Distance(this.transform.position, _navMeshAgent.destination) < Mathf.Epsilon)
+        if (Vector3.Distance(transform.position, _navMeshAgent.destination) < Mathf.Epsilon)
         {
             _navMeshAgent.isStopped = true;
             StartCoroutine(_MoveToChair());
+            currentState = GuestState.OrderPending;
         }
     }
+
     // Coroutine For Animation
     private IEnumerator _MoveToChair()
     {
@@ -92,51 +98,38 @@ public class GuestAIController : MonoBehaviour
                                            Time.deltaTime * 10f);
             yield return _rotationRate;
         }
-
-        currentState = GuestState.OrderPending;
         yield return null;
     }
 
     private void OrderPending()
     {
-        GameObject dish;
-        _chairComponentCache.CheckDish(out dish);
-
-        if (dish != null) currentState = GuestState.Eating;
+        // Order Dish
+        currentState = GuestState.Eating;
     }
 
     private void EatDish()
     {
-        // Eat Food
-        currentState = GuestState.Leaving;
+        GameObject dish = null;
+        _chairComponentCache.CheckDish(out dish);
+        if (dish != null)
+        {
+            dish = null;
+            _navMeshAgent.SetDestination(_spawnPositionCache);
+            _navMeshAgent.isStopped = false;
+            currentState = GuestState.Leaving;
+        }
     }
 
     private void WalkToDoor()
     {
-        _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(_spawnPositionCache);
-
-        if (Vector3.Distance(this.transform.position, _spawnPositionCache) < 1f)
+        if(Vector3.Distance(transform.position, _spawnPositionCache) < 1f)
         {
-            GuestGenerator.EnqueueChair(_targetChair);
-            GuestGenerator.EnqueueGuest(this.gameObject);
             gameObject.SetActive(false);
         }
     }
     #endregion
 
     #region Private Method
-    // Set the destination as a chair.
-    private void SetTarget()
-    {
-        _targetChair = GuestGenerator.DequeueChair();
-        _chairComponentCache = _targetChair.GetComponent<Chair>();
 
-        _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(_targetChair.transform.position
-                               + _targetChair.transform.forward * targetDistanceOffset);
-
-        currentState = GuestState.Moving;
-    }
     #endregion
 }

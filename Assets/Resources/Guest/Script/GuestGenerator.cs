@@ -9,10 +9,6 @@ public class GuestGenerator : MonoBehaviour
     public static void EnqueueChair(GameObject chair) { _chairQueue.Enqueue(chair); }
     public static GameObject DequeueChair() { return _chairQueue.Dequeue(); }
 
-    // Guest Object Pool
-    private static Queue<GameObject> _guestQueue = new Queue<GameObject>();
-    public static void EnqueueGuest(GameObject guest) { _guestQueue.Enqueue(guest); }
-
     [SerializeField]
     private GameObject GuestPrefab = null;
 
@@ -32,12 +28,7 @@ public class GuestGenerator : MonoBehaviour
             gameObject.SetActive(false);
         }
 
-        // Instantiate Guests amount of Chair
-        for (int i = 0; i < _chairQueue.Count; i++)
-        {
-            GameObject guest = Instantiate(GuestPrefab);
-            guest.SetActive(false);
-        }
+        ObjectPool.SetupObjectPoolItemByTargetPrefab(GuestPrefab, _chairQueue.Count);
 
         _guestSpawnRate = new WaitForSeconds(GuestSpawnRate);
         StartCoroutine(_SpawnGuest());
@@ -48,9 +39,9 @@ public class GuestGenerator : MonoBehaviour
     {
         while (this.enabled)
         {
-            if(_guestQueue.Count != 0)
+            if(_chairQueue.Count != 0)
             {
-                GameObject guest = _guestQueue.Dequeue();
+                GameObject guest = ObjectPool.GetObjectItemAtPool(GuestPrefab);
                 guest.transform.position = transform.position;
                 guest.SetActive(true);
             }

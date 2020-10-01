@@ -14,7 +14,7 @@ public class Chair : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Result")
+        if(other.tag == "Ingredient")
         {
             _connectedDish = other.gameObject;
         }
