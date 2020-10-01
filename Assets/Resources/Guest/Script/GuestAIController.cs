@@ -39,9 +39,11 @@ public class GuestAIController : MonoBehaviour
         _chairComponentCache = _targetChair.GetComponent<Chair>();
 
         currentState = GuestState.Moving;
+
         _navMeshAgent.enabled = false;
         _navMeshAgent.enabled = true;
         _navMeshAgent.SetDestination(_targetChair.transform.position);
+
         _navMeshAgent.isStopped = false;
     }
 
@@ -111,9 +113,10 @@ public class GuestAIController : MonoBehaviour
     {
         GameObject dish = null;
         _chairComponentCache.CheckDish(out dish);
+
         if (dish != null)
         {
-            dish = null;
+            dish.SetActive(false);
             _navMeshAgent.SetDestination(_spawnPositionCache);
             _navMeshAgent.isStopped = false;
             currentState = GuestState.Leaving;

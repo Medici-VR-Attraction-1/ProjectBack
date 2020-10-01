@@ -89,11 +89,14 @@ public class PlayerHandAction : MonoBehaviour
             yield return _handMoveRate;
         }
         ///
-        _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
-        _grabTarget.GetComponent<Rigidbody>().AddForce((transform.forward + Vector3.up * 0.12f) * 2f,
-                                                  ForceMode.Impulse);
-        _grabTarget.transform.SetParent(null);
+        if(_grabTarget.activeSelf)
+        {
+            _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
+            _grabTarget.GetComponent<Rigidbody>().AddForce((transform.forward + Vector3.up * 0.12f) * 2f,
+                                                      ForceMode.Impulse);
+        }
         _isHandUsing = false;
+        _grabTarget.transform.SetParent(null);
         ///
         while (Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
         {

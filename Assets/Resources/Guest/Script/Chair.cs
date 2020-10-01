@@ -6,15 +6,14 @@ public class Chair : MonoBehaviour
 {
     private GameObject _connectedDish = null;
 
-
     private void Awake()
     {
         GuestGenerator.EnqueueChair(this.gameObject);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Ingredient")
+        if (other.tag == "Ingredient")
         {
             _connectedDish = other.gameObject;
         }
