@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Includes/URPAsset/Scenes/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    path: Assets/Scene/LobbyScene/LobbyScene.unity
+    guid: 907e4f3256069ab42acb0d09f744420c
+  - enabled: 1
+    path: Assets/Scene/SinglePlayerScene/SinglePlayerScene.unity
+    guid: 3b6f62c8c2e02434f85431a9eb3ac902
+  - enabled: 1
+    path: Assets/Scene/MultiPlayerScene/MultiPlayerScene.unity
+    guid: 369906200a45bcb4ab29a2ae87aa47a5
   m_configObjects: {}

@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TreeEditor;
+﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.XR;
 
+[RequireComponent(typeof(PhotonView))]
 public class PlayerHandAction : MonoBehaviour
 {
     [SerializeField]
@@ -21,6 +20,7 @@ public class PlayerHandAction : MonoBehaviour
     private string _inputButtonName = "";
     private Vector3 _moveAmount = Vector3.zero;
     private bool _isLeftHand;
+    private PhotonView _photonView;
 
     // Property Get Set
     public bool CheckHandUsing() { return _isHandUsing; }
@@ -32,6 +32,12 @@ public class PlayerHandAction : MonoBehaviour
 
         _handDistance = handDistance * handDistance;
         _inputButtonName = buttonName;
+    }
+
+    private void Start()
+    {
+        _photonView = GetComponent<PhotonView>();
+        if (!_photonView.IsMine) this.enabled = false;
     }
 
     #region Keyboad And Mouse Player Hand Input Action
@@ -88,16 +94,18 @@ public class PlayerHandAction : MonoBehaviour
             _moveAmount += movement;
             yield return _handMoveRate;
         }
+
         ///
-        if(_grabTarget.activeSelf)
+        if (_grabTarget != null && _grabTarget.activeSelf)
         {
-            _grabTarget.GetComponent<Rigidbody>().isKinematic = false;
-            _grabTarget.GetComponent<Rigidbody>().AddForce((transform.forward + Vector3.up * 0.12f) * 2f,
-                                                      ForceMode.Impulse);
+            Vector3 forceVector = (transform.forward + transform.up * 0.12f) * 2f;
+            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(forceVector);
+            _grabTarget.transform.SetParent(null);
+            _grabTarget = null;
         }
         _isHandUsing = false;
-        _grabTarget.transform.SetParent(null);
         ///
+
         while (Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
         {
             transform.position = Vector3.Lerp(transform.position, HandJoint.transform.position, 0.5f);
@@ -111,18 +119,21 @@ public class PlayerHandAction : MonoBehaviour
     }
     #endregion
 
+
+
     // Grab object if object is in Trigger
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Ingredient" && !_isHandUsing)
         {
             _grabTarget = other.gameObject;
-            _grabTarget.GetComponent<Rigidbody>().isKinematic = true;
+            
             _grabTarget.transform.SetParent(transform);
             _grabTarget.transform.position = transform.position;
-
             Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
+            _grabTarget.GetComponent<HoldableObjectContoller>().HoldObject();
             _grabTarget.transform.position += offset * 0.12f;
+
             _isHandUsing = true;
         }
     }

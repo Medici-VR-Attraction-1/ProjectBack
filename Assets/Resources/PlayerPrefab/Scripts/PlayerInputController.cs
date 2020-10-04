@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
 using UnityEngine;
 using UnityEngine.XR;
 
 [RequireComponent(typeof(PlayerMovement))]
-public class PlayerInputController : MonoBehaviour
+public class PlayerInputController : MonoBehaviourPunCallbacks
 {
     private delegate void InputBinder();
     private InputBinder InputBinderForUpdate = null;
@@ -32,57 +32,59 @@ public class PlayerInputController : MonoBehaviour
     private float _verticalRotationAmount = 0f;
 
     #region MonoBehaviour Callbacks
-    private void OnEnable()
+    public override void OnEnable()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        _currentInput.PositionInput = Vector3.zero;
-        _currentInput.RotationInput = Vector3.zero;
-
-        // Delegate : Bind Input by Controller Type
-        if (XRDevice.isPresent)
+        if (!photonView.IsMine && PhotonNetwork.IsConnected)
         {
-
+            this.enabled = false;
         }
         else
         {
-            InputBinderForUpdate += new InputBinder(KMPositionInput);
-            InputBinderForUpdate += new InputBinder(KMRotationInput);
-            InputBinderForUpdate += new InputBinder(KMActionInput);
+            _currentInput.PositionInput = Vector3.zero;
+            _currentInput.RotationInput = Vector3.zero;
+
+            _playerMovement = GetComponent<PlayerMovement>();
+            if (CheckComponentValue())
+            {
+                Debug.Log("Player InputController : Components are Unset, Please Check Object");
+                gameObject.SetActive(false);
+            }
+
+            _playerCameraComponent = PlayerCamera.GetComponent<Camera>();
+            _playerCameraComponent.enabled = true;
+            PlayerCamera.GetComponent<AudioListener>().enabled = true;
+
+            // Just KM Player
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            _leftHandAction = PlayerHandL.GetComponent<PlayerHandAction>();
+            _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
+
+            _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
+            _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Delegate : Bind Input by Controller Type
+            if (XRDevice.isPresent)
+            {
+
+            }
+            else
+            {
+                InputBinderForUpdate += new InputBinder(KMPositionInput);
+                InputBinderForUpdate += new InputBinder(KMRotationInput);
+                InputBinderForUpdate += new InputBinder(KMActionInput);
+            }
         }
-    }
-
-    private void Start()
-    {
-        _playerMovement = GetComponent<PlayerMovement>();
-        if (CheckComponentValue())
-        {
-            Debug.Log("Player InputController : Components are Unset, Please Check Object");
-            gameObject.SetActive(false);
-        }
-
-        _playerCameraComponent = PlayerCamera.GetComponent<Camera>();
-
-        // Just KM Player
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        _leftHandAction = PlayerHandL.GetComponent<PlayerHandAction>();
-        _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
-
-        _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
-        _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     private void Update()
     {
         // Delegate : Bind Input by Controller Type
         InputBinderForUpdate();
-
         _playerMovement.SetTargetMovement(_currentInput);
     }
 
-    private void OnDisable()
+    public override void OnDisable()
     {
         // Clear Delegate on Disabled
         InputBinderForUpdate = null;

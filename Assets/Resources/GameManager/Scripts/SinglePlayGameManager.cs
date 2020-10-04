@@ -1,17 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.XR.OpenVR;
-using UnityEngine;
-using UnityEngine.VR;
+﻿using UnityEngine;
 using UnityEngine.XR;
-using Valve.VR;
 
-public class MainSceneGameManager : MonoBehaviour
+public class SinglePlayGameManager : MonoBehaviour
 {
-    private static MainSceneGameManager _instance = null;
+    private static SinglePlayGameManager _instance = null;
 
     #region Public Static Method
-    public static MainSceneGameManager GetInstance() { return _instance; }
+    public static SinglePlayGameManager GetInstance() { return _instance; }
     #endregion
 
     #region Public Method
