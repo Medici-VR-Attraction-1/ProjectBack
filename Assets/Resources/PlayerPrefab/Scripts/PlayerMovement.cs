@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             transform.position = Vector3.Lerp(transform.position,
                                         _recieveTargetPosition,
-                                        Time.deltaTime * 5f);
+                                        Time.deltaTime * 10f);
 
             transform.rotation = Quaternion.Slerp(transform.rotation,
                                            _recieveTargetRotation,

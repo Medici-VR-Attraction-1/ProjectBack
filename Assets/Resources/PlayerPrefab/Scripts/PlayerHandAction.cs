@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
-public class PlayerHandAction : MonoBehaviour
+public class PlayerHandAction : MonoBehaviour, IPunObservable
 {
     [SerializeField]
     private GameObject HandJoint = null;
@@ -23,6 +23,9 @@ public class PlayerHandAction : MonoBehaviour
     private bool _isLeftHand;
     private PhotonView _photonView;
 
+    private Vector3 _serializePosition = Vector3.zero;
+    private Quaternion _serializeRotation = Quaternion.identity;
+
     // Property Get Set
     public bool CheckHandUsing() { return _isHandUsing; }
 
@@ -40,6 +43,20 @@ public class PlayerHandAction : MonoBehaviour
         _photonView = GetComponent<PhotonView>();
         if (!_photonView.IsMine && PhotonNetwork.IsConnected)
             GetComponent<SphereCollider>().enabled = false;
+    }
+
+    private void Update()
+    {
+        if (!_photonView.IsMine)
+        {
+            transform.position = Vector3.Lerp(transform.position,
+                                        _serializePosition,
+                                        Time.deltaTime * 10f);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation,
+                                           _serializeRotation,
+                                           Time.deltaTime * 5f);
+        }
     }
 
     #region Keyboad And Mouse Player Hand Input Action
@@ -148,6 +165,20 @@ public class PlayerHandAction : MonoBehaviour
         if(other.tag == "Ingredient" && !_isHandUsing)
         {
             HoldGrabObject(other.gameObject);
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            _serializePosition = (Vector3)stream.ReceiveNext();
+            _serializeRotation = (Quaternion)stream.ReceiveNext();
         }
     }
 }
