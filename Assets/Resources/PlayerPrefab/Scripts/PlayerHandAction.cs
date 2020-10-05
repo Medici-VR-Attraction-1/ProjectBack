@@ -1,5 +1,6 @@
 ﻿using Photon.Pun;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
@@ -37,7 +38,8 @@ public class PlayerHandAction : MonoBehaviour
     private void Start()
     {
         _photonView = GetComponent<PhotonView>();
-        if (!_photonView.IsMine) this.enabled = false;
+        if (!_photonView.IsMine && PhotonNetwork.IsConnected)
+            GetComponent<SphereCollider>().enabled = false;
     }
 
     #region Keyboad And Mouse Player Hand Input Action
@@ -95,12 +97,10 @@ public class PlayerHandAction : MonoBehaviour
             yield return _handMoveRate;
         }
 
-        ///
+        /// Remove Grab Object Reference and Release Object
         if (_grabTarget != null && _grabTarget.activeSelf)
         {
-            Vector3 forceVector = (transform.forward + transform.up * 0.12f) * 2f;
-            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(forceVector);
-            _grabTarget.transform.SetParent(null);
+            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(_photonView.ViewID);
             _grabTarget = null;
         }
         _isHandUsing = false;
@@ -119,22 +119,23 @@ public class PlayerHandAction : MonoBehaviour
     }
     #endregion
 
-
-
     // Grab object if object is in Trigger
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Ingredient" && !_isHandUsing)
         {
             _grabTarget = other.gameObject;
-            
-            _grabTarget.transform.SetParent(transform);
-            _grabTarget.transform.position = transform.position;
-            Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
-            _grabTarget.GetComponent<HoldableObjectContoller>().HoldObject();
-            _grabTarget.transform.position += offset * 0.12f;
+            HoldableObjectContoller targetComponent = _grabTarget.GetComponent<HoldableObjectContoller>();
 
-            _isHandUsing = true;
+            if (!targetComponent.CheckHoldByPlayer())
+            {
+                Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
+                offset = offset * 0.12f;
+
+                targetComponent.HoldObject(_photonView.ViewID, offset);
+
+                _isHandUsing = true;
+            }
         }
     }
 }

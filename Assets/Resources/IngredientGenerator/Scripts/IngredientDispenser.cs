@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ public class IngredientDispenser : MonoBehaviour
                 for (int k = 0; k < 4; k++)
                 {
                     positionCache.x += 1.5f;
-                    Instantiate(_ingredientPrefab, 
+                    PhotonNetwork.Instantiate(_ingredientPrefab.name, 
                              positionCache * Random.Range(1.0f, 1.02f), 
                              transform.rotation);
                 }

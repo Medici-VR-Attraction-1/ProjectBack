@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 using UnityEngine.XR;
 
 public class SinglePlayGameManager : MonoBehaviour
@@ -28,6 +29,12 @@ public class SinglePlayGameManager : MonoBehaviour
     #region MonoBehaviour Callbacks
     private void Awake()
     {
+        PhotonNetwork.OfflineMode = true;
+        PhotonNetwork.CreateRoom("Test");
+    }
+
+    private void Start()
+    {
         // Check and Set Singleton Object
         if(_instance != null)
         {
@@ -49,7 +56,7 @@ public class SinglePlayGameManager : MonoBehaviour
         else
         {
             GameObject targetPrefab = XRDevice.isPresent ? VRPlayerInstance : KMPlayerInstance;
-            _playerInstance = Instantiate(targetPrefab, PlayerStartPoint.position, PlayerStartPoint.rotation);
+            _playerInstance =PhotonNetwork.Instantiate(targetPrefab.name, PlayerStartPoint.position, PlayerStartPoint.rotation);
         }
     }
     #endregion
