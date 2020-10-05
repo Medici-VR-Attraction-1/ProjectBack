@@ -16,7 +16,7 @@ public class IngredientGenerator : MonoBehaviour
 
     private void Awake()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient && PhotonNetwork.IsConnected)
         {
             this.enabled = false;
         }

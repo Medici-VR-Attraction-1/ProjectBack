@@ -40,8 +40,8 @@ public class IngredientDispenser : MonoBehaviour
                 {
                     positionCache.x += 0.2f;
                     PhotonNetwork.Instantiate(_ingredientPrefab.name, 
-                             positionCache * Random.Range(1.0f, 1.02f), 
-                             transform.rotation);
+                                         positionCache * Random.Range(1.0f, 1.02f), 
+                                         transform.rotation);
                 }
             }
         }
