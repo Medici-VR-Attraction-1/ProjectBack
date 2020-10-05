@@ -1,11 +1,11 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView), typeof(Rigidbody))]
-public class HoldableObjectContoller : MonoBehaviour
+public class HoldableObjectContoller : MonoBehaviourPunCallbacks
 {
     private Rigidbody _rigidbody = null;
-    private PhotonView _photonView = null;
     private bool _isHold = false;
 
     public bool CheckHoldByPlayer() { return _isHold; }
@@ -13,9 +13,8 @@ public class HoldableObjectContoller : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _photonView = GetComponent<PhotonView>();
 
-        if (!_photonView.IsMine && PhotonNetwork.IsConnected) 
+        if (!photonView.IsMine && PhotonNetwork.IsConnected) 
             _rigidbody.isKinematic = true;
     }
 
@@ -24,7 +23,7 @@ public class HoldableObjectContoller : MonoBehaviour
     public void ReleaseObject(int viewId)
     {
         if (PhotonNetwork.IsConnected)
-            _photonView.RPC("_ReleaseObject", RpcTarget.All, viewId);
+            photonView.RPC("_ReleaseObject", RpcTarget.All, viewId);
         else
             _ReleaseObject(viewId);
     }
@@ -36,7 +35,7 @@ public class HoldableObjectContoller : MonoBehaviour
         transform.SetParent(null);
         transform.position = targetView.transform.position;
 
-        if (_photonView.IsMine || !PhotonNetwork.IsConnected)
+        if (photonView.IsMine || !PhotonNetwork.IsConnected)
         {
             Transform hand = targetView.transform;
             Vector3 forceDirection = hand.forward + hand.up * 0.12f;
@@ -54,7 +53,7 @@ public class HoldableObjectContoller : MonoBehaviour
     public void HoldObject(int viewId, Vector3 offset)
     {
         if (PhotonNetwork.IsConnected)
-            _photonView.RPC("_HoldObject", RpcTarget.All, viewId, offset);
+            photonView.RPC("_HoldObject", RpcTarget.All, viewId, offset);
         else
             _HoldObject(viewId, offset);
     }
@@ -63,7 +62,7 @@ public class HoldableObjectContoller : MonoBehaviour
     private void _HoldObject(int viewId, Vector3 offset)
     {
         PhotonView targetView = PhotonNetwork.GetPhotonView(viewId);
-        _photonView.TransferOwnership(targetView.Owner);
+        photonView.TransferOwnership(targetView.Owner);
 
         Transform hand = targetView.transform;
         transform.SetParent(hand);

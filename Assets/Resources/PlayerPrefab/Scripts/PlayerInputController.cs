@@ -54,25 +54,24 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
             _playerCameraComponent.enabled = true;
             PlayerCamera.GetComponent<AudioListener>().enabled = true;
 
-            // Just KM Player
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             _leftHandAction = PlayerHandL.GetComponent<PlayerHandAction>();
-            _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
-
             _rightHandAction = PlayerHandR.GetComponent<PlayerHandAction>();
-            _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // Delegate : Bind Input by Controller Type
             if (XRDevice.isPresent)
             {
-
+                InputBinderForUpdate += new InputBinder(SVRPositionInput);
+                InputBinderForUpdate += new InputBinder(SVRRotationInput);
+                InputBinderForUpdate += new InputBinder(SVRActionInput);
             }
             else
             {
                 InputBinderForUpdate += new InputBinder(KMPositionInput);
                 InputBinderForUpdate += new InputBinder(KMRotationInput);
                 InputBinderForUpdate += new InputBinder(KMActionInput);
+
+                _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
+                _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
             }
         }
     }
@@ -94,7 +93,7 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    #region Input Handler
+    #region Keyboard and Mouse Player Input Handler
     // Update Player Position Input By Key and Mouse Controller
     private void KMPositionInput()
     {
@@ -147,6 +146,23 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
                 _rightHandAction.KMPlayerGrabAction(targetHandPoint);
             }
         }
+    }
+    #endregion
+
+    #region Steam VR Player Input Handler
+    private void SVRPositionInput()
+    {
+
+    }
+
+    private void SVRRotationInput()
+    {
+
+    }
+
+    private void SVRActionInput()
+    {
+
     }
     #endregion
 

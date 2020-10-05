@@ -4,10 +4,7 @@ using Photon.Realtime;
 
 public class ClientConnector : MonoBehaviourPunCallbacks
 {
-    #region Serialize Field
-    [SerializeField, Range(0, 2)]
-    private byte maxPlayerPerRoom = 2;
-    #endregion
+    private readonly byte maxPlayerPerRoom = 2;
 
     #region Private Field
     private bool isConnecting = false;
@@ -43,11 +40,6 @@ public class ClientConnector : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true;
     }
-
-    private void Update()
-    {
-        
-    }
     #endregion
 
     #region Pun Callback
@@ -80,7 +72,7 @@ public class ClientConnector : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Connection Success, Load Game Scene...");
-
+        
         PhotonNetwork.LoadLevel("MultiPlayerScene");
     }
     #endregion

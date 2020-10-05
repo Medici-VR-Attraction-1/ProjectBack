@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using Valve.VR;
+using Photon.Realtime;
 
 [RequireComponent(typeof(CharacterController),typeof(PhotonView))]
 public class PlayerMovement : MonoBehaviour, IPunObservable
@@ -14,6 +15,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private PhotonView _photonView = null;
     private Vector3 _recieveTargetPosition = Vector3.zero;
     private Quaternion _recieveTargetRotation = Quaternion.identity;
+
     public void SetTargetMovement(PlayerInputValue playerInputValue)
     {
         _targetValue = playerInputValue;

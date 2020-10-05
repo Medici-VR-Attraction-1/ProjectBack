@@ -141,7 +141,7 @@ public class GuestAIController : MonoBehaviourPun, IPunObservable
     {
         GameObject dish = null;
         _chairComponentCache.CheckDish(out dish);
-
+        
         if (dish != null)
         {
             dish.SetActive(false);

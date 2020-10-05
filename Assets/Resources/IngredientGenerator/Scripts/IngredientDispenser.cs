@@ -21,7 +21,6 @@ public class IngredientDispenser : MonoBehaviour
         }
     }
 
-    //4*4*4 형태로 재료 무더기 생성
     private void GenerateIngredientsAll()
     {
         Vector3 positionCache;
@@ -39,9 +38,9 @@ public class IngredientDispenser : MonoBehaviour
                 for (int k = 0; k < 4; k++)
                 {
                     positionCache.x += 0.2f;
-                    PhotonNetwork.Instantiate(_ingredientPrefab.name, 
-                                         positionCache * Random.Range(1.0f, 1.02f), 
-                                         transform.rotation);
+                    PhotonNetwork.InstantiateRoomObject(_ingredientPrefab.name, 
+                                                   positionCache * Random.Range(1.0f, 1.02f), 
+                                                   transform.rotation);
                 }
             }
         }
