@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,17 +22,24 @@ public class GuestGenerator : MonoBehaviour
 
     private void Start()
     {
-        // Check Object Reference in Inspector
-        if (GuestPrefab == null)
+        if (!PhotonNetwork.IsMasterClient && PhotonNetwork.IsConnected)
         {
-            Debug.Log("GuestGenerator : Guest is UnSet. Please Check Properties.");
-            gameObject.SetActive(false);
+            this.enabled = false;
         }
+        else
+        {
+            // Check Object Reference in Inspector
+            if (GuestPrefab == null)
+            {
+                Debug.Log("GuestGenerator : Guest is UnSet. Please Check Properties.");
+                gameObject.SetActive(false);
+            }
 
-        ObjectPool.SetupObjectPoolItemByTargetPrefab(GuestPrefab, _chairQueue.Count);
+            ObjectPool.SetupObjectPoolItemByTargetPrefab(GuestPrefab, _chairQueue.Count);
 
-        _guestSpawnRate = new WaitForSeconds(GuestSpawnRate);
-        StartCoroutine(_SpawnGuest());
+            _guestSpawnRate = new WaitForSeconds(GuestSpawnRate);
+            StartCoroutine(_SpawnGuest());
+        }
     }
     #endregion
 

@@ -452,7 +452,6 @@ GameObject:
   - component: {fileID: 2900273779123552731}
   - component: {fileID: 7686554424657289368}
   - component: {fileID: 8900530460530679514}
-  - component: {fileID: 906681800253686029}
   - component: {fileID: 2011890633217150582}
   m_Layer: 0
   m_Name: Camera
@@ -559,29 +558,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &906681800253686029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3784162833005984484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  observableSearch: 2
-  Synchronization: 2
-  OwnershipTransfer: 0
-  ObservedComponents:
-  - {fileID: 2011890633217150582}
-  viewIdField: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &2011890633217150582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,6 +783,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 8971976911830699073}
+  - {fileID: 2011890633217150582}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

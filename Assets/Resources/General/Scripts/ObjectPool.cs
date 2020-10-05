@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class ObjectPool
 {
@@ -67,7 +68,7 @@ public class ObjectPool
         ObjectPoolItem objectPoolItemCache;
         for (int i = 0; i < prePoolingItemSize; i++)
         {
-            gameObjectCache = GameObject.Instantiate(targetPrefab);
+            gameObjectCache = PhotonNetwork.Instantiate(targetPrefab.name, Vector3.zero, Quaternion.identity);
 
             // Set up return address for recycle object.
             objectPoolItemCache = gameObjectCache.AddComponent<ObjectPoolItem>();

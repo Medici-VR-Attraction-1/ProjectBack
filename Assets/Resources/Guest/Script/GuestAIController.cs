@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class GuestAIController : MonoBehaviour
+public class GuestAIController : MonoBehaviourPun, IPunObservable
 {
     // Public For Debug, Fix to Private After Release
     public enum GuestState
@@ -21,6 +22,8 @@ public class GuestAIController : MonoBehaviour
     private Chair _chairComponentCache = null;
 
     private Vector3 _spawnPositionCache = Vector3.zero;
+    private Vector3 _serializePosition = Vector3.zero;
+    private Quaternion _serializeRotation = Quaternion.identity;
 
     private WaitForSeconds _rotationRate = new WaitForSeconds(0.011f);
 
@@ -29,6 +32,11 @@ public class GuestAIController : MonoBehaviour
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _navMeshAgent.enabled = false;
+        }
     }
 
     private void OnEnable()
@@ -56,23 +64,43 @@ public class GuestAIController : MonoBehaviour
 
     private void Update()
     {
-        switch (currentState)
+        if (PhotonNetwork.IsMasterClient)
         {
-            case GuestState.Moving:
-                MoveToChair();
-                break;
+            switch (currentState)
+            {
+                case GuestState.Moving:
+                    MoveToChair();
+                    break;
 
-            case GuestState.OrderPending:
-                OrderPending();
-                break;
+                case GuestState.OrderPending:
+                    OrderPending();
+                    break;
 
-            case GuestState.Eating:
-                EatDish();
-                break;
+                case GuestState.Eating:
+                    EatDish();
+                    break;
 
-            case GuestState.Leaving:
-                WalkToDoor();
-                break;
+                case GuestState.Leaving:
+                    WalkToDoor();
+                    break;
+            }
+        }
+        else
+        {
+            if(Vector3.Distance(transform.position, _serializePosition) > 2f)
+            {
+                transform.position = _serializePosition;
+            }
+            else
+            {
+                transform.position = Vector3.Lerp(transform.position, 
+                                            _serializePosition, 
+                                            Time.deltaTime * 8f);
+            }
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, 
+                                           _serializeRotation,
+                                           Time.deltaTime * 5f);
         }
     }
     #endregion
@@ -135,4 +163,18 @@ public class GuestAIController : MonoBehaviour
     #region Private Method
 
     #endregion
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            _serializePosition = (Vector3)stream.ReceiveNext();
+            _serializeRotation = (Quaternion)stream.ReceiveNext();
+        }
+    }
 }

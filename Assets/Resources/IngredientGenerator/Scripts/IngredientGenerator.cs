@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,15 +16,22 @@ public class IngredientGenerator : MonoBehaviour
 
     private void Awake()
     {
-        // Check and Set Singleton Object
-        if (_instance != null)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("IngredientGenerator : IngredientGenerator has Duplicated, Delete Another One");
-            gameObject.SetActive(false);
+            this.enabled = false;
         }
+        else
+        {
+            // Check and Set Singleton Object
+            if (_instance != null)
+            {
+                Debug.Log("IngredientGenerator : IngredientGenerator has Duplicated, Delete Another One");
+                gameObject.SetActive(false);
+            }
 
-        _instance = this;
-        _ingredientPrefabListCache = IngredientPrefabList.ToArray();
+            _instance = this;
+            _ingredientPrefabListCache = IngredientPrefabList.ToArray();
+        }
     }
 
     // Importing a list of materials, selecting them randomly return GameObject
