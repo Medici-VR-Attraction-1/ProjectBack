@@ -98,12 +98,7 @@ public class PlayerHandAction : MonoBehaviour
         }
 
         /// Remove Grab Object Reference and Release Object
-        if (_grabTarget != null && _grabTarget.activeSelf)
-        {
-            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(_photonView.ViewID);
-            _grabTarget = null;
-        }
-        _isHandUsing = false;
+        ReleaseGrabObject();
         ///
 
         while (Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
@@ -119,23 +114,40 @@ public class PlayerHandAction : MonoBehaviour
     }
     #endregion
 
+    #region Private Method
+    private void HoldGrabObject(GameObject target)
+    {
+        _grabTarget = target;
+        HoldableObjectContoller targetComponent = _grabTarget.GetComponent<HoldableObjectContoller>();
+
+        if (!targetComponent.CheckHoldByPlayer())
+        {
+            Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
+            offset = offset * 0.12f;
+
+            targetComponent.HoldObject(_photonView.ViewID, offset);
+
+            _isHandUsing = true;
+        }
+    }
+
+    private void ReleaseGrabObject()
+    {
+        if (_grabTarget != null && _grabTarget.activeSelf)
+        {
+            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(_photonView.ViewID);
+            _grabTarget = null;
+        }
+        _isHandUsing = false;
+    }
+    #endregion
+
     // Grab object if object is in Trigger
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Ingredient" && !_isHandUsing)
         {
-            _grabTarget = other.gameObject;
-            HoldableObjectContoller targetComponent = _grabTarget.GetComponent<HoldableObjectContoller>();
-
-            if (!targetComponent.CheckHoldByPlayer())
-            {
-                Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
-                offset = offset * 0.12f;
-
-                targetComponent.HoldObject(_photonView.ViewID, offset);
-
-                _isHandUsing = true;
-            }
+            HoldGrabObject(other.gameObject);
         }
     }
 }
