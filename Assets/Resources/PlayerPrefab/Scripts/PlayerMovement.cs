@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using Photon.Pun;
-using Valve.VR;
 using Photon.Realtime;
 
 [RequireComponent(typeof(CharacterController),typeof(PhotonView))]
-public class PlayerMovement : MonoBehaviour, IPunObservable
+public class PlayerMovement : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField]
     private float MoveSpeed = 1.0f;
@@ -12,7 +11,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private CharacterController _characterController = null;
     private PlayerInputValue _targetValue = new PlayerInputValue();
     private float _rotationHorizontalValue = 0f;
-    private PhotonView _photonView = null;
     private Vector3 _recieveTargetPosition = Vector3.zero;
     private Quaternion _recieveTargetRotation = Quaternion.identity;
 
@@ -24,13 +22,12 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private void Start()
     {
         _characterController = GetComponent<CharacterController>();
-        _photonView = GetComponent<PhotonView>();
     }
 
     // Apply Movement by Current Input
     private void Update()
     {
-        if (_photonView.IsMine || !PhotonNetwork.IsConnected)
+        if (photonView.IsMine || !PhotonNetwork.IsConnected)
         {
             _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;
             Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);

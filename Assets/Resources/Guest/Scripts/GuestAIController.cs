@@ -19,7 +19,7 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
     private NavMeshAgent _navMeshAgent = null;
     private Vector3 _defaultPosition = Vector3.zero;
 
-    private Vector3 _serializePosition = Vector3.zero;
+    private Vector3 _serializePosition;
     private Quaternion _serializeRotation = Quaternion.identity;
     private string _serializeTargetNameCache = null;
 
@@ -28,6 +28,8 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _navMeshAgent.enabled = false;
+
+        _serializePosition = transform.position;
     }
 
     private void Start()
@@ -63,9 +65,16 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            transform.position = Vector3.Lerp(transform.position,
-                                        _serializePosition,
-                                        Time.deltaTime * 10f);
+            if(Vector3.Distance(transform.position, _serializePosition) > 2f)
+            {
+                transform.position = _serializePosition;
+            }
+            else
+            {
+                transform.position = Vector3.Lerp(transform.position,
+                                            _serializePosition,
+                                            Time.deltaTime * 10f);
+            }
 
             transform.rotation = Quaternion.Lerp(transform.rotation,
                                            _serializeRotation,

@@ -25,7 +25,7 @@ public class GuestManager : MonoBehaviourPunCallbacks
     public static GuestManager GetInstance() { return _instance; }
 
     [SerializeField]
-    private GameObject GuestPrefab;
+    private GameObject GuestPrefab = null;
 
     [SerializeField, Range(1f, 50f)]
     private float GuestSpawnRate = 3.0f;
@@ -53,9 +53,9 @@ public class GuestManager : MonoBehaviourPunCallbacks
     // Make Random Position Queue
     private void Awake()
     {
-        if(_instance != null)
+        if(_instance != null || GuestPrefab == null)
         {
-            Debug.LogError("Guest Manager Has Duplicated, Please Deactive Other Object");
+            Debug.LogError("Guest Manager Has Duplicated or Prefab Missing, Please Check Object");
             gameObject.SetActive(false);
         }
         _instance = this;
@@ -100,7 +100,7 @@ public class GuestManager : MonoBehaviourPunCallbacks
             if (_counterQueue.Count != 0)
             {
                 // Instantiate Guest
-                GuestCache = PhotonNetwork.Instantiate(GuestPrefab.name, transform.position, Quaternion.identity);
+                GuestCache = PhotonNetwork.InstantiateRoomObject(GuestPrefab.name, transform.position, Quaternion.identity);
             }
 
             yield return _guestSpawnWait;

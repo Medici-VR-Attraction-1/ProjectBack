@@ -38,7 +38,7 @@ public class IngredientDispenser : MonoBehaviour
                 for (int k = 0; k < 4; k++)
                 {
                     positionCache.x += 0.2f;
-                    PhotonNetwork.Instantiate(_ingredientPrefab.name, 
+                    PhotonNetwork.InstantiateRoomObject(_ingredientPrefab.name, 
                                           positionCache * Random.Range(1.0f, 1.02f), 
                                           transform.rotation);
                 }
