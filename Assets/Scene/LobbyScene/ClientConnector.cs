@@ -58,7 +58,7 @@ public class ClientConnector : MonoBehaviourPunCallbacks
         Debug.Log("Can't Find Available Room, Create New Room");
 
         PhotonNetwork.CreateRoom(PhotonNetwork.CountOfRooms.ToString(),
-                               new RoomOptions { MaxPlayers = maxPlayerPerRoom });
+                               new RoomOptions { MaxPlayers = maxPlayerPerRoom, CleanupCacheOnLeave = false });
     }
 
     public override void OnDisconnected(DisconnectCause cause)
