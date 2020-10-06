@@ -55,9 +55,11 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
                 case GuestBehaviourState.EnterToCounter:
                     EnterToCounter();
                     break;
+
                 case GuestBehaviourState.WaitForFood:
                     WaitForFood();
                     break;
+
                 case GuestBehaviourState.ExitToDefaultPosition:
                     ExitToDefaultPosition();
                     break;

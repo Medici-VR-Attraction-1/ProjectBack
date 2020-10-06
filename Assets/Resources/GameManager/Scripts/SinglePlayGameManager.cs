@@ -29,6 +29,7 @@ public class SinglePlayGameManager : MonoBehaviour
     #region MonoBehaviour Callbacks
     private void Awake()
     {
+        Application.targetFrameRate = 90;
         PhotonNetwork.OfflineMode = true;
         PhotonNetwork.CreateRoom("Test");
     }

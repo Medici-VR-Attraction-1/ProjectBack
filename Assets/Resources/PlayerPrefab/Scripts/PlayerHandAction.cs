@@ -140,7 +140,7 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
         if (!targetComponent.CheckHoldByPlayer())
         {
             Vector3 offset = transform.forward + transform.right * (_isLeftHand ? 1 : -1);
-            offset = offset * 0.12f;
+            offset = offset * 0.05f;
 
             targetComponent.HoldObject(_photonView.ViewID, offset);
 

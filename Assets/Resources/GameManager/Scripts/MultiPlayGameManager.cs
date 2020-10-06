@@ -32,6 +32,7 @@ public class MultiPlayGameManager : MonoBehaviour
     #region MonoBehaviour Callbacks
     private void Awake()
     {
+        Application.targetFrameRate = 90;
         // Check and Set Singleton Object
         if (_instance != null)
         {

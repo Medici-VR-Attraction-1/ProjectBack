@@ -8,7 +8,7 @@ public class ClientConnector : MonoBehaviourPunCallbacks
 
     #region Private Field
     private bool isConnecting = false;
-    private string gameVersion = "0.1";
+    private string gameVersion = "0.2";
     #endregion
 
     #region Public Method

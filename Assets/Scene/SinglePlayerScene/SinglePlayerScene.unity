@@ -99,7 +99,7 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: 6445d5efe1233634ba565fec52963d24,
     type: 2}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -846,7 +846,7 @@ PrefabInstance:
         type: 3}
       propertyPath: IngredientPrefabList.Array.data[0]
       value: 
-      objectReference: {fileID: 4223472640030959208, guid: b865b169812192a428f0ee082b3b072d,
+      objectReference: {fileID: 835933945369253667, guid: e0ad480951e64f2488e8e66c63c8ea2a,
         type: 3}
     - target: {fileID: 6619819491084040863, guid: 37aa64fcf1033d841b34ede9777b342f,
         type: 3}
