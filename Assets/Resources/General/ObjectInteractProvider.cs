@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using Photon.Pun;
 
-public class ObjectInteractProvider : MonoBehaviour
+public class ObjectInteractProvider : MonoBehaviourPun
 {
     [SerializeField]
     private ObjectInteractType InteractionType = ObjectInteractType.None;
@@ -76,7 +77,7 @@ public class ObjectInteractProvider : MonoBehaviour
             if (value.GetInteractType() == InteractionType)
                 _interactObjects[componentKey] = value;
 
-            _vfxObjectsHash[componentKey] = SetUpAndStartVFX(collision.transform.position);
+            photonView.RPC("_StartVFX", RpcTarget.All, componentKey, collision.transform.position);
         }
     }
 
@@ -84,7 +85,19 @@ public class ObjectInteractProvider : MonoBehaviour
     {
         _interactObjects.Remove(collision.gameObject.GetInstanceID());
 
-        VisualEffect ve = _vfxObjectsHash[collision.gameObject.GetInstanceID()];
+        photonView.RPC("_StopVFX", RpcTarget.All, collision.gameObject.GetInstanceID());
+    }
+
+    [PunRPC]
+    private void _StartVFX(int componentKey, Vector3 position)
+    {
+        _vfxObjectsHash[componentKey] = SetUpAndStartVFX(position);
+    }
+
+    [PunRPC]
+    private void _StopVFX(int componentKey)
+    {
+        VisualEffect ve = _vfxObjectsHash[componentKey];
         ReturnVFXToObjectPool(ve);
     }
 }
