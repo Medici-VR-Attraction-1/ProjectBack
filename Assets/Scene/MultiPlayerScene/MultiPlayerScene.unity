@@ -1072,6 +1072,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractionType: 0
   ObjectInteractionSpeed: 30
+  BurnVFXObject: {fileID: 6964555274494046025, guid: c5ba3acecbf9233429764b6e57b7f12b,
+    type: 3}
 --- !u!65 &1163582292
 BoxCollider:
   m_ObjectHideFlags: 0

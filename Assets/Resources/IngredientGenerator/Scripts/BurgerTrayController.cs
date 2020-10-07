@@ -18,16 +18,23 @@ public class BurgerTrayController : MonoBehaviourPun
     private string _targetRecipeCode = null;
     private bool _isAvailable = false;
 
+    public void SetTargetRecipeCode(string recipe) { _targetRecipeCode = recipe; }
+
     public bool IsAvailableRecipeCode()
     {
         if (_isAvailable)
         {
             _isAvailable = false;
+            _targetRecipeCode = null;
             return true;
         }
         return false; 
     }
-    public void SetTargetRecipeCode(string recipe) { _targetRecipeCode = recipe; }
+    
+    public void CleanUpTray()
+    {
+        photonView.RPC("BroadcastClearBuffer", RpcTarget.All, null);
+    }
 
     private void Awake()
     {
@@ -51,7 +58,7 @@ public class BurgerTrayController : MonoBehaviourPun
             {
                 _isAvailable = true;
 
-                photonView.RPC("BroadcastClearBuffer", RpcTarget.All, null);
+                CleanUpTray();
             }
         }
         //
