@@ -26,16 +26,16 @@ public class IngredientDispenser : MonoBehaviour
         Vector3 positionCache;
         positionCache = transform.position;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
             positionCache.x = transform.position.x;
             positionCache.z = transform.position.z;
             positionCache.y += 0.2f;
-            for (int j = 0; j < 4; j++)
+            for (int j = 0; j < 3; j++)
             {
                 positionCache.x = transform.position.x;
                 positionCache.z += 0.2f;
-                for (int k = 0; k < 4; k++)
+                for (int k = 0; k < 3; k++)
                 {
                     positionCache.x += 0.2f;
                     PhotonNetwork.InstantiateRoomObject(_ingredientPrefab.name, 

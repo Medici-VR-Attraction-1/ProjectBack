@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Dispenser
   - Ingredient
+  - Hand
   layers:
   - Default
   - TransparentFX

@@ -37,6 +37,7 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
             Transform hand = targetView.transform;
             Vector3 forceDirection = hand.forward + hand.up * 0.12f;
 
+            _rigidbody.useGravity = true;
             _rigidbody.isKinematic = false;
             _rigidbody.AddForce(forceDirection * 2f, ForceMode.Impulse);
         }
@@ -59,6 +60,7 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
         PhotonView targetView = PhotonNetwork.GetPhotonView(viewId);
         photonView.TransferOwnership(targetView.Owner);
         _rigidbody.isKinematic = true;
+        _rigidbody.useGravity = false;
 
         Transform hand = targetView.transform;
         transform.SetParent(hand);

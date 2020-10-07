@@ -34,6 +34,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     #region MonoBehaviour Callbacks
     public override void OnEnable()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         if (!photonView.IsMine && PhotonNetwork.IsConnected)
         {
             this.enabled = false;
@@ -145,6 +148,12 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
             {
                 _rightHandAction.KMPlayerGrabAction(targetHandPoint);
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = !Cursor.visible;
+            Cursor.lockState = Cursor.visible ? CursorLockMode.None : CursorLockMode.Locked;
         }
     }
     #endregion

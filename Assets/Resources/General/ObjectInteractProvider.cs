@@ -39,7 +39,7 @@ public class ObjectInteractProvider : MonoBehaviour
             int componentKey = collision.gameObject.GetInstanceID();
             ObjectInteractController value = collision.gameObject.GetComponent<ObjectInteractController>();
 
-            if (value.GetObjectType() == InteractionType)
+            if (value.GetInteractType() == InteractionType)
                 _interactObjects[componentKey] = value;
         }
     }

@@ -87,10 +87,6 @@ public class GuestManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) PhotonNetwork.LeaveRoom();
-    }
     // Instantiate Guest at Available Time with Available Counter
     private IEnumerator _SpawnGuestToDefaultPosition()
     {
