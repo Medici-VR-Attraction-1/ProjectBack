@@ -1,10 +1,28 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
 public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewOwnerChange
 {
+    #region Added
+    private static int _idProvider = 0;
+    public int componentID;
+    public static Dictionary<int, Transform> hash = new Dictionary<int, Transform>();
+    [PunRPC]
+    private void BroadcastID(int id)
+    {
+        componentID = id;
+        hash[id] = transform;
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        photonView.RPC("BroadcastID", newPlayer, componentID);
+    }
+    #endregion
+
     private Rigidbody _rigidbody = null;
     private bool _isHold = false;
 
@@ -12,6 +30,14 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
 
     private void Awake()
     {
+        //
+        if (PhotonNetwork.IsMasterClient)
+        {
+            componentID = _idProvider;
+            _idProvider++;
+            hash[componentID] = transform;
+        }
+        //
         _rigidbody = GetComponent<Rigidbody>();
 
         if (!photonView.IsMine && PhotonNetwork.IsConnected) 

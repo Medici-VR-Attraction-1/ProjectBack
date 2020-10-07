@@ -20,57 +20,37 @@ public class BurgerTrayController : MonoBehaviourPun
         _ingredientList.Add(transform);
     }
 
-    private void Update()
+    private void InteractObjectListsAdd(Transform tr)
     {
-        if (_ingredientList.Count > 1 && PhotonNetwork.IsMasterClient)
+        _ingredientList.Add(tr);
+        _burgerProperty.Add(tr.GetComponent<ObjectInteractController>().GetObjectTypeName());
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        Transform colObject = other.transform;
+
+        if (colObject.tag == "Ingredient" && !_ingredientList.Contains(colObject))
         {
-            for (int i = 1; i < _ingredientList.Count; i++)
+            HoldableObjectContoller hoc = colObject.GetComponent<HoldableObjectContoller>();
+            if (hoc.photonView.IsMine && !hoc.CheckHoldByPlayer())
             {
-                if (Vector3.Distance(_ingredientList[i].position, _ingredientList[i - 1].position) > 1f) 
-                {
-                    InteractObjectListsRemove(i);
-                    SortIngredientStacks(i);
-                }
+                other.attachedRigidbody.isKinematic = true;
+                other.enabled = false;
+
+                colObject.position = _currentPosition + _offsetVector * _ingredientList.Count;
+                colObject.rotation = Quaternion.identity;
+                colObject.Rotate(new Vector3(0, Random.Range(0f, 360f), 0));
+
+                InteractObjectListsAdd(colObject);
+                photonView.RPC("BroadcastInteractID", RpcTarget.Others, hoc.componentID);
             }
         }
     }
 
-    private void SortIngredientStacks(int index)
+    [PunRPC]
+    private void BroadcastInteractID(int id)
     {
-        for (int i = index; i < _ingredientList.Count; i++)
-        {
-            _ingredientList[i].position -= _offsetVector;
-        }
-    }
-
-    private void InteractObjectListsRemove(int index)
-    {
-        _ingredientList.RemoveAt(index);
-        _burgerProperty.RemoveAt(index);
-    }
-
-    private void InteractObjectListsAdd(Transform tr)
-    {
-        _ingredientList.Add(tr);
-
-        ObjectInteractController oic = tr.GetComponent<ObjectInteractController>();
-        _burgerProperty.Add(oic.GetObjectTypeName());
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        Transform colObject = collision.transform;
-
-        if (colObject.tag == "Ingredient" && !_ingredientList.Contains(colObject))
-        {
-            Rigidbody _ingredientBody = colObject.GetComponent<Rigidbody>();
-            _ingredientBody.isKinematic = true;
-
-            colObject.position = _currentPosition + _offsetVector * _ingredientList.Count;
-            colObject.rotation = Quaternion.identity;
-            colObject.Rotate(new Vector3(0, Random.Range(0f, 360f), 0));
-
-            InteractObjectListsAdd(colObject);
-        }
+        InteractObjectListsAdd(HoldableObjectContoller.hash[id]);
     }
 }
