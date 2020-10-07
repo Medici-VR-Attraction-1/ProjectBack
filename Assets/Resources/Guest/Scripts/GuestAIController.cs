@@ -2,10 +2,14 @@
 using UnityEngine.AI;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
 {
+    [SerializeField]
+    private Text GuestTextRenderer = null;
+
     private enum GuestBehaviourState
     {
         EnterToCounter,
@@ -15,6 +19,8 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
 
     private GuestBehaviourState _currentState;
     private CounterData _currentTarget;
+    private string _targetRecipeCode;
+    private bool _isAte = false;
 
     private NavMeshAgent _navMeshAgent = null;
     private Vector3 _defaultPosition = Vector3.zero;
@@ -42,7 +48,16 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             _currentTarget = GuestManager.GetInstance().GetCounterFromQueue();
 
             _navMeshAgent.enabled = true;
-            _navMeshAgent.SetDestination(_currentTarget.CounterPosition);
+            _navMeshAgent.SetDestination(_currentTarget.CounterPosition - Vector3.right);
+
+            _targetRecipeCode = RecipeManager.GetInstance().GetRandomRecipeCode();
+            GuestTextRenderer.text = _targetRecipeCode;
+
+            _currentTarget.CounterComponent.SetTargetRecipeCode(_targetRecipeCode);
+        }
+        else
+        {
+            photonView.RPC("_RequestRecipeCode", photonView.Owner, null);
         }
     }
 
@@ -104,9 +119,13 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void WaitForFood()
     {
-        _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(_defaultPosition);
-        _currentState = GuestBehaviourState.ExitToDefaultPosition;
+        _isAte = _currentTarget.CounterComponent.IsAvailableRecipeCode();
+        if (_isAte)
+        {
+            _navMeshAgent.isStopped = false;
+            _navMeshAgent.SetDestination(_defaultPosition);
+            _currentState = GuestBehaviourState.ExitToDefaultPosition;
+        }
     }
 
     private void ExitToDefaultPosition()
@@ -129,6 +148,19 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
     private void OnDestroy()
     {
         if (photonView.IsMine) GuestManager.GetInstance().ReturnCounter(_currentTarget);
+    }
+
+    [PunRPC]
+    private void _RequestRecipeCode()
+    {
+        photonView.RPC("_BroadcastTargetRecipeCode", RpcTarget.Others, _targetRecipeCode);
+    }
+
+    [PunRPC]
+    private void _BroadcastTargetRecipeCode(string code)
+    {
+        _targetRecipeCode = code;
+        GuestTextRenderer.text = code;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -159,7 +191,7 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             Transform tr = GuestManager.GetInstance().transform.Find(_serializeTargetNameCache);
 
             _currentTarget = new CounterData(tr.position,
-                                         tr.GetComponent<CounterTriggerHandler>(),
+                                         tr.GetComponent<BurgerTrayController>(),
                                          _serializeTargetNameCache);
 
             photonView.TransferOwnership(newMasterClient);

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6619819491084040863}
   - component: {fileID: -8183496714018399519}
+  - component: {fileID: -3977698640196382236}
   m_Layer: 0
   m_Name: Ingredient Generator
   m_TagString: Untagged
@@ -43,4 +44,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b82e14a5ead391b4a98713142aaeafb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IngredientList: []
+  IngredientPrefabList: []
+--- !u!114 &-3977698640196382236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8614754015825721202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f3724bc2f842e4cbedec59864e32b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Recipe1: 000000000500000006000000
+  Recipe2: 0000000001000000030000000500000006000000
+  Recipe3: 000000000100000002000000040000000500000006000000
+  Recipe4: 0000000001000000050000000500000006000000
+  Recipe5: 08000000
+  Recipe6: 07000000

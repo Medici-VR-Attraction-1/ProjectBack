@@ -8,10 +8,10 @@ using Valve.VR.InteractionSystem;
 public struct CounterData
 {
     public Vector3 CounterPosition;
-    public CounterTriggerHandler CounterComponent;
+    public BurgerTrayController CounterComponent;
     public string CounterName;
 
-    public CounterData(Vector3 position, CounterTriggerHandler component, string counterName)
+    public CounterData(Vector3 position, BurgerTrayController component, string counterName)
     {
         CounterPosition = position;
         CounterComponent = component;
@@ -73,7 +73,7 @@ public class GuestManager : MonoBehaviourPunCallbacks
                 randomIndex = Random.Range(0, guestSeats.Count - 1);
                 Transform tr = guestSeats[randomIndex];
                 _counterQueue.Enqueue(new CounterData(tr.position,
-                                                  tr.GetComponent<CounterTriggerHandler>(),
+                                                  tr.GetComponent<BurgerTrayController>(),
                                                   tr.name));
                 guestSeats.RemoveAt(randomIndex);
             }
@@ -125,7 +125,7 @@ public class GuestManager : MonoBehaviourPunCallbacks
             _serializeTargetNamesCache.ForEach<string>((string temp) => {
                 Transform tr = transform.Find(temp);
                 _counterQueue.Enqueue(new CounterData(tr.position,
-                                    tr.GetComponent<CounterTriggerHandler>(),
+                                    tr.GetComponent<BurgerTrayController>(),
                                     tr.name));
             });
 

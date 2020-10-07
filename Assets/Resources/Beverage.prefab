@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &9185161134983293439
 Transform:
   m_ObjectHideFlags: 0
@@ -208,7 +208,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4428624431869373828
 Transform:
   m_ObjectHideFlags: 0
@@ -340,7 +340,7 @@ PrefabInstance:
     - target: {fileID: 6789126559479445948, guid: 947d351791efdc04b88ec3133e581f27,
         type: 3}
       propertyPath: m_Name
-      value: Ingredient Base Variant
+      value: Beverage
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 947d351791efdc04b88ec3133e581f27, type: 3}

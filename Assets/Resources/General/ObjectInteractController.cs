@@ -19,6 +19,8 @@ public enum ObjectTypeName
     Bacon,
     Beef,
     UpperBun,
+    FrenchFry,
+    Beverage,
     None
 }
 

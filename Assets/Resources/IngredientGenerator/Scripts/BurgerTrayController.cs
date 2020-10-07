@@ -1,6 +1,8 @@
 ﻿using Photon.Pun;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 public class BurgerTrayController : MonoBehaviourPun
 {
@@ -10,7 +12,22 @@ public class BurgerTrayController : MonoBehaviourPun
 
     private Vector3 _currentPosition;
     private List<Transform> _ingredientList = new List<Transform>();
-    private List<ObjectTypeName> _burgerProperty = new List<ObjectTypeName>();
+
+    private StringBuilder _recipeDataCache = new StringBuilder();
+
+    private string _targetRecipeCode = null;
+    private bool _isAvailable = false;
+
+    public bool IsAvailableRecipeCode()
+    {
+        if (_isAvailable)
+        {
+            _isAvailable = false;
+            return true;
+        }
+        return false; 
+    }
+    public void SetTargetRecipeCode(string recipe) { _targetRecipeCode = recipe; }
 
     private void Awake()
     {
@@ -23,7 +40,21 @@ public class BurgerTrayController : MonoBehaviourPun
     private void InteractObjectListsAdd(Transform tr)
     {
         _ingredientList.Add(tr);
-        _burgerProperty.Add(tr.GetComponent<ObjectInteractController>().GetObjectTypeName());
+
+        ObjectTypeName otn = tr.GetComponent<ObjectInteractController>().GetObjectTypeName();
+        _recipeDataCache.Append((int)otn);
+
+        //
+        if (RecipeManager.GetInstance().IsAvailableRecipe(_recipeDataCache.ToString()))
+        {
+            if(_recipeDataCache.ToString() == _targetRecipeCode && photonView.IsMine)
+            {
+                _isAvailable = true;
+
+                photonView.RPC("BroadcastClearBuffer", RpcTarget.All, null);
+            }
+        }
+        //
     }
 
     private void OnTriggerStay(Collider other)
@@ -52,5 +83,20 @@ public class BurgerTrayController : MonoBehaviourPun
     private void BroadcastInteractID(int id)
     {
         InteractObjectListsAdd(HoldableObjectContoller.hash[id]);
+    }
+
+    [PunRPC]
+    private void BroadcastClearBuffer()
+    {
+        _ingredientList.Remove(transform);
+        _ingredientList.ForEach<Transform>((Transform trn) =>
+        {
+            PhotonView pv = trn.GetComponent<PhotonView>();
+            if (pv.IsMine) PhotonNetwork.Destroy(trn.gameObject);
+        });
+
+        _recipeDataCache.Clear();
+        _ingredientList.Clear();
+        _ingredientList.Add(transform);
     }
 }
