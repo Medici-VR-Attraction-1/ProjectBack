@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.XR;
 
 [RequireComponent(typeof(CharacterController),typeof(PhotonView))]
 public class PlayerMovement : MonoBehaviourPunCallbacks, IPunObservable
@@ -29,11 +30,21 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine || !PhotonNetwork.IsConnected)
         {
-            _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;
-            Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);
-            transform.rotation = Quaternion.Euler(nextRotation);
+            Vector3 nextMovement;
 
-            Vector3 nextMovement = transform.rotation * _targetValue.PositionInput * MoveSpeed;
+            if (!XRDevice.isPresent)
+            {
+                _rotationHorizontalValue += _targetValue.RotationInput.y * Time.deltaTime;
+                Vector3 nextRotation = new Vector3(0, _rotationHorizontalValue, 0);
+                transform.rotation = Quaternion.Euler(nextRotation);
+
+                nextMovement = transform.rotation * _targetValue.PositionInput * MoveSpeed;
+            }
+            else
+            {
+                nextMovement = _targetValue.PositionInput * MoveSpeed;
+            }
+
             _characterController.SimpleMove(nextMovement);
         }
         else

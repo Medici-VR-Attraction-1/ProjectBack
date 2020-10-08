@@ -50,6 +50,26 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/TrackPadAxis",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/default/in/North",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/South",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/West",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/East",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

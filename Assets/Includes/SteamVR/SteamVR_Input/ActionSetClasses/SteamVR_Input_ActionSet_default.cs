@@ -105,6 +105,46 @@ namespace Valve.VR
             }
         }
         
+        public virtual SteamVR_Action_Vector2 TrackPadAxis
+        {
+            get
+            {
+                return SteamVR_Actions.default_TrackPadAxis;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean North
+        {
+            get
+            {
+                return SteamVR_Actions.default_North;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean South
+        {
+            get
+            {
+                return SteamVR_Actions.default_South;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean West
+        {
+            get
+            {
+                return SteamVR_Actions.default_West;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean East
+        {
+            get
+            {
+                return SteamVR_Actions.default_East;
+            }
+        }
+        
         public virtual SteamVR_Action_Vibration Haptic
         {
             get

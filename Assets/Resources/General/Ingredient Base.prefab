@@ -42,7 +42,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a847b364ff2b340b0eb918cb05629b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CookType: 2
+  ObjectMaterialType: 9
+  InteractionType: 2
+  TargetMeshRenderer: []
 --- !u!1001 &7253921721983524820
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -129,6 +131,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Ingredient
+      objectReference: {fileID: 0}
+    - target: {fileID: 4223472640030959208, guid: b865b169812192a428f0ee082b3b072d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b865b169812192a428f0ee082b3b072d, type: 3}

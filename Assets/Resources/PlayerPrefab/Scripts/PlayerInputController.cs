@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using UnityEngine;
 using UnityEngine.XR;
+using Valve.VR;
 
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerInputController : MonoBehaviourPunCallbacks
@@ -23,6 +24,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     [SerializeField]
     private float KMPlayerHandLenght = 1.0f;
 
+    [SerializeField]
+    private LayerMask InteractionObjectLayer = -1;
+
     private PlayerInputValue _currentInput = new PlayerInputValue();
 
     private PlayerMovement _playerMovement = null;
@@ -30,6 +34,18 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     private PlayerHandAction _rightHandAction = null;
     private Camera _playerCameraComponent = null;
     private float _verticalRotationAmount = 0f;
+
+    #region VR Input Bind
+    private SteamVR_Action_Boolean _north;
+    private SteamVR_Action_Boolean _south;
+    private SteamVR_Action_Boolean _west;
+    private SteamVR_Action_Boolean _east;
+
+    private SteamVR_Action_Boolean _interaction;
+
+    private SteamVR_Behaviour_Pose _trackedObjRightHand;
+    private SteamVR_Behaviour_Pose _trackedObjLeftHand;
+    #endregion
 
     #region MonoBehaviour Callbacks
     public override void OnEnable()
@@ -63,6 +79,16 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
             // Delegate : Bind Input by Controller Type
             if (XRDevice.isPresent)
             {
+                _trackedObjRightHand = PlayerHandR.GetComponent<SteamVR_Behaviour_Pose>();
+                _trackedObjLeftHand = PlayerHandL.GetComponent<SteamVR_Behaviour_Pose>();
+
+                _north = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("North");
+                _south = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("South");
+                _west = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("West");
+                _east = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("East");
+
+                _interaction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("InteractUI");
+
                 InputBinderForUpdate += new InputBinder(SVRPositionInput);
                 InputBinderForUpdate += new InputBinder(SVRRotationInput);
                 InputBinderForUpdate += new InputBinder(SVRActionInput);
@@ -161,17 +187,49 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     #region Steam VR Player Input Handler
     private void SVRPositionInput()
     {
+        Vector3 direction = Vector3.zero;
+        if (_north.GetState(_trackedObjRightHand.inputSource)) direction.z = 1;
+        if (_south.GetState(_trackedObjRightHand.inputSource)) direction.z = -1;
+        if (_west.GetState(_trackedObjRightHand.inputSource)) direction.x = -1;
+        if (_east.GetState(_trackedObjRightHand.inputSource)) direction.x = 1;
 
+        _currentInput.PositionInput = PlayerCamera.transform.rotation * direction;
     }
 
     private void SVRRotationInput()
     {
-
+        
     }
 
     private void SVRActionInput()
     {
+        if(_interaction.GetStateDown(_trackedObjLeftHand.inputSource))
+        {
+            Collider[] col = Physics.OverlapSphere(_leftHandAction.transform.position, 
+                                             0.1f,
+                                             InteractionObjectLayer);
 
+            if (col.Length > 0) _leftHandAction.HoldGrabObject(col[0].gameObject);
+        }
+
+        if (_interaction.GetStateUp(_trackedObjLeftHand.inputSource))
+        {
+            _leftHandAction.ReleaseGrabObject();
+        }
+
+        if (_interaction.GetStateDown(_trackedObjRightHand.inputSource))
+        {
+            Collider[] col = Physics.OverlapSphere(_rightHandAction.transform.position,
+                                             0.1f,
+                                             InteractionObjectLayer);
+
+            if (col.Length > 0) _rightHandAction.HoldGrabObject(col[0].gameObject);
+        }
+
+        if (_interaction.GetStateUp(_trackedObjRightHand.inputSource))
+        {
+            _rightHandAction.ReleaseGrabObject();
+        }
     }
     #endregion
 

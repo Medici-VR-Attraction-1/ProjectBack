@@ -177,7 +177,6 @@ MonoBehaviour:
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 6001255475323791977}
-  - {fileID: 0}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -326,7 +325,7 @@ MonoBehaviour:
   Synchronization: 1
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: 0}
+  - {fileID: 4005142714439140366}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -714,6 +713,9 @@ MonoBehaviour:
   PlayerHandL: {fileID: 1838800472647025868}
   KMCameraRotationSpeed: 100
   KMPlayerHandLenght: 1.5
+  InteractionObjectLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!143 &3068739485686594290
 CharacterController:
   m_ObjectHideFlags: 0

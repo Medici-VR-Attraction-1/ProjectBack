@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 [RequireComponent(typeof(PhotonView))]
 public class PlayerHandAction : MonoBehaviour, IPunObservable
@@ -132,7 +133,7 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
     #endregion
 
     #region Private Method
-    private void HoldGrabObject(GameObject target)
+    public void HoldGrabObject(GameObject target)
     {
         _grabTarget = target;
         HoldableObjectContoller targetComponent = _grabTarget.GetComponent<HoldableObjectContoller>();
@@ -148,7 +149,7 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
         }
     }
 
-    private void ReleaseGrabObject()
+    public void ReleaseGrabObject()
     {
         if (_grabTarget != null && _grabTarget.activeSelf)
         {
@@ -162,7 +163,7 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
     // Grab object if object is in Trigger
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Ingredient" && !_isHandUsing)
+        if(other.tag == "Ingredient" && !_isHandUsing && !XRDevice.isPresent)
         {
             HoldGrabObject(other.gameObject);
         }
