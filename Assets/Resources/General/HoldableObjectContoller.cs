@@ -2,6 +2,8 @@
 using Photon.Realtime;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.XR;
+using Valve.VR;
 
 [RequireComponent(typeof(Rigidbody))]
 public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewOwnerChange
@@ -49,13 +51,13 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
 
     // Set on Rigidbody Update and Remove Parent Transform.
     #region Release Object RPC
-    public void ReleaseObject(int viewId)
+    public void ReleaseObject(int viewId, bool isLeftHand)
     {
-        photonView.RPC("_ReleaseObject", RpcTarget.All, viewId);
+        photonView.RPC("_ReleaseObject", RpcTarget.All, viewId, isLeftHand);
     }
 
     [PunRPC]
-    private void _ReleaseObject(int viewId)
+    private void _ReleaseObject(int viewId, bool isLeftHand)
     {
         PhotonView targetView = PhotonNetwork.GetPhotonView(viewId);
         transform.SetParent(null);
@@ -64,11 +66,26 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
         if (photonView.IsMine || !PhotonNetwork.IsConnected)
         {
             Transform hand = targetView.transform;
-            Vector3 forceDirection = hand.forward + hand.up * 0.12f;
 
             _rigidbody.useGravity = true;
             _rigidbody.isKinematic = false;
-            _rigidbody.AddForce(forceDirection * 2f, ForceMode.Impulse);
+
+            Vector3 forceDirection;
+            if (XRDevice.isPresent)
+            {
+                SteamVR_Behaviour_Pose cache = isLeftHand ? PlayerInputController.GetInstance().GetLeftHand()
+                    : PlayerInputController.GetInstance().GetRightHand();
+
+                Transform origin = cache.origin ? cache.origin : cache.transform.parent;
+                forceDirection = origin.TransformVector(cache.GetVelocity());
+
+                _rigidbody.velocity = forceDirection * 1.5f;
+            }
+            else
+            {
+                forceDirection = hand.forward + hand.up * 0.12f;
+                _rigidbody.AddForce(forceDirection * 2f, ForceMode.Impulse);
+            }
         }
 
         _isHold = false;

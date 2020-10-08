@@ -153,7 +153,7 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
     {
         if (_grabTarget != null && _grabTarget.activeSelf)
         {
-            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(_photonView.ViewID);
+            _grabTarget.GetComponent<HoldableObjectContoller>().ReleaseObject(_photonView.ViewID, _isLeftHand);
             _grabTarget = null;
         }
         _isHandUsing = false;
