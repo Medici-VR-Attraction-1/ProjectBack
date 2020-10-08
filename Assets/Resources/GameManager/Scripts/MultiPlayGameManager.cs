@@ -77,6 +77,7 @@ public class MultiPlayGameManager : MonoBehaviour
         bool checkResult = VRPlayerInstance != null
                          && KMPlayerInstance != null
                          && PlayerStartPoint != null;
+
         return checkResult;
     }
     #endregion

@@ -40,6 +40,11 @@ public class ClientConnector : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true;
     }
+
+    private void Start()
+    {
+        TryConnect();
+    }
     #endregion
 
     #region Pun Callback

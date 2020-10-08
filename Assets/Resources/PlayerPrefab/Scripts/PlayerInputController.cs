@@ -6,6 +6,12 @@ using Valve.VR;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerInputController : MonoBehaviourPunCallbacks
 {
+    private static PlayerInputController _instance = null;
+    public static PlayerInputController GetInstance() { return _instance; }
+
+    public SteamVR_Behaviour_Pose GetLeftHand() { return _trackedObjLeftHand; }
+    public SteamVR_Behaviour_Pose GetRightHand() { return _trackedObjRightHand; }
+
     private delegate void InputBinder();
     private InputBinder InputBinderForUpdate = null;
 
@@ -48,7 +54,7 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     #endregion
 
     #region MonoBehaviour Callbacks
-    public override void OnEnable()
+    public void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -59,6 +65,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
         }
         else
         {
+            //
+            _instance = this;
+
             _currentInput.PositionInput = Vector3.zero;
             _currentInput.RotationInput = Vector3.zero;
 
@@ -220,7 +229,7 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
         if (_interaction.GetStateDown(_trackedObjRightHand.inputSource))
         {
             Collider[] col = Physics.OverlapSphere(_rightHandAction.transform.position,
-                                             0.1f,
+                                             0.3f,
                                              InteractionObjectLayer);
 
             if (col.Length > 0) _rightHandAction.HoldGrabObject(col[0].gameObject);

@@ -9,12 +9,15 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
     #region Added
     private static int _idProvider = 0;
     public int componentID;
-    public static Dictionary<int, Transform> hash = new Dictionary<int, Transform>();
+    private static Dictionary<int, Transform> _objectIDHash = new Dictionary<int, Transform>();
+
+    public static Transform GetHoldableTransformByID(int index) { return _objectIDHash[index]; }
+
     [PunRPC]
     private void BroadcastID(int id)
     {
         componentID = id;
-        hash[id] = transform;
+        _objectIDHash[id] = transform;
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -35,7 +38,7 @@ public class HoldableObjectContoller : MonoBehaviourPunCallbacks, IOnPhotonViewO
         {
             componentID = _idProvider;
             _idProvider++;
-            hash[componentID] = transform;
+            _objectIDHash[componentID] = transform;
         }
         //
         _rigidbody = GetComponent<Rigidbody>();

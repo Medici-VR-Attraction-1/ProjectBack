@@ -89,7 +89,7 @@ public class BurgerTrayController : MonoBehaviourPun
     [PunRPC]
     private void BroadcastInteractID(int id)
     {
-        InteractObjectListsAdd(HoldableObjectContoller.hash[id]);
+        InteractObjectListsAdd(HoldableObjectContoller.GetHoldableTransformByID(id));
     }
 
     [PunRPC]
