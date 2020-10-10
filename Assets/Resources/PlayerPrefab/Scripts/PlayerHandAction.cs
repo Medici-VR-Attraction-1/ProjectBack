@@ -31,12 +31,17 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
     public bool CheckHandUsing() { return _isHandUsing; }
 
     // Property Initializer
-    public void SetHandProperties(float handDistance, string buttonName, bool isLeftHand)
+    public void SetKMPlayerHandProperties(float handDistance, string buttonName, bool isLeftHand)
     {
         _isLeftHand = isLeftHand;
 
         _handDistance = handDistance * handDistance;
         _inputButtonName = buttonName;
+    }
+
+    public void SetVRPlayerHandProperties(bool isLeftHand)
+    {
+        _isLeftHand = isLeftHand;
     }
 
     private void Start()

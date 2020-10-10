@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using KATVR;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.XR;
 using Valve.VR;
@@ -23,6 +24,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
 
     [SerializeField]
     private GameObject PlayerHandL = null;
+
+    [SerializeField]
+    private GameObject PlayerCharacterBody;
 
     [SerializeField]
     private float KMCameraRotationSpeed = 180f;
@@ -101,6 +105,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
                 InputBinderForUpdate += new InputBinder(SVRPositionInput);
                 InputBinderForUpdate += new InputBinder(SVRRotationInput);
                 InputBinderForUpdate += new InputBinder(SVRActionInput);
+
+                _leftHandAction.SetVRPlayerHandProperties(true);
+                _rightHandAction.SetVRPlayerHandProperties(false);
             }
             else
             {
@@ -108,8 +115,8 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
                 InputBinderForUpdate += new InputBinder(KMRotationInput);
                 InputBinderForUpdate += new InputBinder(KMActionInput);
 
-                _leftHandAction.SetHandProperties(KMPlayerHandLenght, "Fire1", true);
-                _rightHandAction.SetHandProperties(KMPlayerHandLenght, "Fire2", false);
+                _leftHandAction.SetKMPlayerHandProperties(KMPlayerHandLenght, "Fire1", true);
+                _rightHandAction.SetKMPlayerHandProperties(KMPlayerHandLenght, "Fire2", false);
             }
         }
     }
@@ -196,18 +203,24 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     #region Steam VR Player Input Handler
     private void SVRPositionInput()
     {
-        Vector3 direction = Vector3.zero;
-        if (_north.GetState(_trackedObjRightHand.inputSource)) direction.z = 1;
-        if (_south.GetState(_trackedObjRightHand.inputSource)) direction.z = -1;
-        if (_west.GetState(_trackedObjRightHand.inputSource)) direction.x = -1;
-        if (_east.GetState(_trackedObjRightHand.inputSource)) direction.x = 1;
+        if (KATWalkDeviceManager.Instance == null)
+        {
+            Vector3 direction = Vector3.zero;
+            if (_north.GetState(_trackedObjRightHand.inputSource)) direction.z = 1;
+            if (_south.GetState(_trackedObjRightHand.inputSource)) direction.z = -1;
+            if (_west.GetState(_trackedObjRightHand.inputSource)) direction.x = -1;
+            if (_east.GetState(_trackedObjRightHand.inputSource)) direction.x = 1;
 
-        _currentInput.PositionInput = PlayerCamera.transform.rotation * direction;
+            _currentInput.PositionInput = PlayerCamera.transform.rotation * direction;
+        }
     }
 
     private void SVRRotationInput()
     {
-        
+        if (KATWalkDeviceManager.Instance == null) 
+        {
+            PlayerCharacterBody.transform.rotation = PlayerCamera.transform.rotation;
+        }
     }
 
     private void SVRActionInput()
