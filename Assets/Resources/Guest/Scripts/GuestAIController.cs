@@ -10,6 +10,12 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     private Text GuestTextRenderer = null;
 
+    [SerializeField]
+    private Image GuestImageRenderer = null;
+
+    [SerializeField]
+    private Animator animator = null;
+
     private enum GuestBehaviourState
     {
         EnterToCounter,
@@ -54,6 +60,7 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             GuestTextRenderer.text = _targetRecipeCode;
 
             _currentTarget.CounterComponent.SetTargetRecipeCode(_targetRecipeCode);
+            GuestImageRenderer.sprite = RecipeManager.RecipeImageHash[_targetRecipeCode];
         }
         else
         {
@@ -68,14 +75,23 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             switch (_currentState)
             {
                 case GuestBehaviourState.EnterToCounter:
+                    animator.SetTrigger("Walk");
+                    GuestImageRenderer.enabled = false;
+                    GuestTextRenderer.enabled = false;
                     EnterToCounter();
                     break;
 
                 case GuestBehaviourState.WaitForFood:
+                    animator.SetTrigger("Idle");
+                    GuestImageRenderer.enabled = true;
+                    GuestTextRenderer.enabled = true;
                     WaitForFood();
                     break;
 
                 case GuestBehaviourState.ExitToDefaultPosition:
+                    animator.SetTrigger("Walk");
+                    GuestImageRenderer.enabled = false;
+                    GuestTextRenderer.enabled = false;
                     ExitToDefaultPosition();
                     break;
             }
@@ -122,6 +138,11 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
         _isAte = _currentTarget.CounterComponent.IsAvailableRecipeCode();
         if (_isAte)
         {
+            if (MultiPlayGameManager.GetInstance() != null)
+            {
+                MultiPlayGameManager.GetInstance().AddPlayerScore(_targetRecipeCode.Length * 1000);
+            }
+
             _navMeshAgent.isStopped = false;
             _navMeshAgent.SetDestination(_defaultPosition);
             _currentState = GuestBehaviourState.ExitToDefaultPosition;
@@ -161,6 +182,7 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
     {
         _targetRecipeCode = code;
         GuestTextRenderer.text = code;
+        GuestImageRenderer.sprite = RecipeManager.RecipeImageHash[code];
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -171,6 +193,8 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(transform.rotation);
             stream.SendNext(_currentTarget.CounterName);
             stream.SendNext(_currentState);
+            stream.SendNext(GuestImageRenderer.enabled);
+            stream.SendNext(GuestTextRenderer.enabled);
         }
         else
         {
@@ -178,6 +202,8 @@ public class GuestAIController : MonoBehaviourPunCallbacks, IPunObservable
             _serializeRotation = (Quaternion)stream.ReceiveNext();
             _serializeTargetNameCache = (string)stream.ReceiveNext();
             _currentState = (GuestBehaviourState)stream.ReceiveNext();
+            GuestImageRenderer.enabled = (bool)stream.ReceiveNext();
+            GuestTextRenderer.enabled = (bool)stream.ReceiveNext();
         }
     }
 

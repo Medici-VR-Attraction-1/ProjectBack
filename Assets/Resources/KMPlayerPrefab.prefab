@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 4135066510978608037}
   m_Layer: 0
   m_Name: RHand
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 4351079448557484284}
   m_Layer: 0
   m_Name: LHand
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -842,7 +842,7 @@ MonoBehaviour:
   PlayerHandL: {fileID: 1838800472647025868}
   PlayerCharacterBody: {fileID: 0}
   KMCameraRotationSpeed: 100
-  KMPlayerHandLenght: 1.5
+  KMPlayerHandLenght: 1.45
   InteractionObjectLayer:
     serializedVersion: 2
     m_Bits: 256

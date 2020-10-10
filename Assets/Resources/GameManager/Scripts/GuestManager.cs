@@ -64,17 +64,18 @@ public class GuestManager : MonoBehaviourPunCallbacks
 
         if (photonView.IsMine)
         {
-            List<Transform> guestSeats = transform.GetComponentsInChildren<Transform>().ToList<Transform>();
-            guestSeats.RemoveAt(0);
+            List<BurgerTrayController> guestSeats = transform
+                                             .GetComponentsInChildren<BurgerTrayController>()
+                                             .ToList<BurgerTrayController>();
 
             int randomIndex;
             while (guestSeats.Count != 0)
             {
                 randomIndex = Random.Range(0, guestSeats.Count - 1);
-                Transform tr = guestSeats[randomIndex];
-                _counterQueue.Enqueue(new CounterData(tr.position,
-                                                  tr.GetComponent<BurgerTrayController>(),
-                                                  tr.name));
+                BurgerTrayController burgetTray = guestSeats[randomIndex];
+                _counterQueue.Enqueue(new CounterData(burgetTray.transform.position,
+                                                  burgetTray.GetComponent<BurgerTrayController>(),
+                                                  burgetTray.transform.name));
                 guestSeats.RemoveAt(randomIndex);
             }
         }

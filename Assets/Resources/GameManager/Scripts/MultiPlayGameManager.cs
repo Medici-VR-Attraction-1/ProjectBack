@@ -1,8 +1,9 @@
 ﻿using Photon.Pun;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR;
 
-public class MultiPlayGameManager : MonoBehaviour
+public class MultiPlayGameManager : MonoBehaviourPunCallbacks
 {
     private static MultiPlayGameManager _instance = null;
 
@@ -11,7 +12,11 @@ public class MultiPlayGameManager : MonoBehaviour
     #endregion
 
     #region Public Method
-    public void AddPlayerScore(int value) { _playerScore += value; }
+    public void AddPlayerScore(int value)
+    { 
+        _playerScore += value;
+        photonView.RPC("_BroadcastScoreData", RpcTarget.All, _playerScore);
+    }
     #endregion
 
     [SerializeField]
@@ -26,6 +31,8 @@ public class MultiPlayGameManager : MonoBehaviour
     [SerializeField]
     private Transform SubPlayerStartPoint = null;
 
+    [SerializeField]
+    private Text playerScoreText = null;
     private GameObject _playerInstance = null;
     private int _playerScore = 0;
 
@@ -67,6 +74,15 @@ public class MultiPlayGameManager : MonoBehaviour
                                                  PlayerStartPoint.position,
                                                  PlayerStartPoint.rotation);
         }
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _BroadcastScoreData(_playerScore);
+        }
+        else
+        {
+            photonView.RPC("_RequestScoreData", RpcTarget.MasterClient, null);
+        }
     }
     #endregion
 
@@ -81,4 +97,17 @@ public class MultiPlayGameManager : MonoBehaviour
         return checkResult;
     }
     #endregion
+
+    [PunRPC]
+    private void _RequestScoreData()
+    {
+        photonView.RPC("_BroadcastScoreData", RpcTarget.Others, _playerScore);
+    }
+
+    [PunRPC]
+    private void _BroadcastScoreData(int score)
+    {
+        _playerScore = score;
+        playerScoreText.text = score.ToString() + "원";
+    }
 }
