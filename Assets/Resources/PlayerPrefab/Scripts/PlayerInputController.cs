@@ -16,6 +16,12 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     private delegate void InputBinder();
     private InputBinder InputBinderForUpdate = null;
 
+    private enum VRPlayerGrabSearchType
+    {
+        OverlapSphere,
+        RayCast
+    }
+
     [SerializeField]
     private GameObject PlayerCamera = null;
 
@@ -36,6 +42,9 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
 
     [SerializeField]
     private LayerMask InteractionObjectLayer = -1;
+
+    [SerializeField]
+    private VRPlayerGrabSearchType vrPlayerGrapType = VRPlayerGrabSearchType.RayCast;
 
     private PlayerInputValue _currentInput = new PlayerInputValue();
 
@@ -225,27 +234,60 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
 
     private void SVRActionInput()
     {
-        if(_interaction.GetStateDown(_trackedObjLeftHand.inputSource))
+        switch (vrPlayerGrapType)
         {
-            Collider[] col = Physics.OverlapSphere(_leftHandAction.transform.position, 
-                                             0.1f,
-                                             InteractionObjectLayer);
+            case VRPlayerGrabSearchType.OverlapSphere:
+                if (_interaction.GetStateDown(_trackedObjLeftHand.inputSource))
+                {
+                    Collider[] col = Physics.OverlapSphere(_leftHandAction.transform.position,
+                                                     0.1f,
+                                                     InteractionObjectLayer);
 
-            if (col.Length > 0) _leftHandAction.HoldGrabObject(col[0].gameObject);
+                    if (col.Length > 0) _leftHandAction.HoldGrabObject(col[0].gameObject);
+                }
+
+                if (_interaction.GetStateDown(_trackedObjRightHand.inputSource))
+                {
+                    Collider[] col = Physics.OverlapSphere(_rightHandAction.transform.position,
+                                                     0.3f,
+                                                     InteractionObjectLayer);
+
+                    if (col.Length > 0) _rightHandAction.HoldGrabObject(col[0].gameObject);
+                }
+
+                break;
+
+            case VRPlayerGrabSearchType.RayCast:
+                if (_interaction.GetStateDown(_trackedObjLeftHand.inputSource))
+                {
+                    Ray handForwardRay = new Ray(_leftHandAction.transform.position,
+                                                _leftHandAction.transform.forward);
+
+                    RaycastHit rayInfo;
+                    if (Physics.Raycast(handForwardRay, out rayInfo, 1f, InteractionObjectLayer))
+                    {
+                        _leftHandAction.HoldGrabObject(rayInfo.collider.gameObject);
+                    }
+                }
+
+                if (_interaction.GetStateDown(_trackedObjRightHand.inputSource))
+                {
+                    Ray handForwardRay = new Ray(_rightHandAction.transform.position,
+                                                _rightHandAction.transform.forward);
+
+                    RaycastHit rayInfo;
+                    if (Physics.Raycast(handForwardRay, out rayInfo, 1f, InteractionObjectLayer))
+                    {
+                        _rightHandAction.HoldGrabObject(rayInfo.collider.gameObject);
+                    }
+                }
+
+                break;
         }
 
         if (_interaction.GetStateUp(_trackedObjLeftHand.inputSource))
         {
             _leftHandAction.ReleaseGrabObject();
-        }
-
-        if (_interaction.GetStateDown(_trackedObjRightHand.inputSource))
-        {
-            Collider[] col = Physics.OverlapSphere(_rightHandAction.transform.position,
-                                             0.3f,
-                                             InteractionObjectLayer);
-
-            if (col.Length > 0) _rightHandAction.HoldGrabObject(col[0].gameObject);
         }
 
         if (_interaction.GetStateUp(_trackedObjRightHand.inputSource))
