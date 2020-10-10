@@ -66,14 +66,14 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
 
     #region Keyboad And Mouse Player Hand Input Action
     // If Hand is not Hold Object, Invoke Grab Object Action
-    public void KMPlayerGrabAction(Vector3 point)
+    public void KMPlayerGrabAction(Vector3 point, Ray cameraRay, LayerMask objectLayer)
     {
-        if (!_isHandMove) StartCoroutine(_KMPlayerGrapAction(point));
+        if (!_isHandMove) StartCoroutine(_KMPlayerGrapAction(point, cameraRay, objectLayer));
         _isHandMove = true;
     }
 
     // Move to Camera Middle Point Fast
-    private IEnumerator _KMPlayerGrapAction(Vector3 point)
+    private IEnumerator _KMPlayerGrapAction(Vector3 point, Ray cameraRay, LayerMask objectLayer)
     {
         Vector3 movement;
         transform.LookAt(point);
@@ -86,7 +86,13 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
             yield return _handMoveRate;
         }
 
-        while(Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
+        RaycastHit rayInfo;
+        if (Physics.Raycast(cameraRay, out rayInfo, 3f, objectLayer))
+        {
+            HoldGrabObject(rayInfo.collider.gameObject);
+        }
+
+        while (Vector3.Distance(transform.position, HandJoint.transform.position) > 0.1f)
         {
             transform.position = Vector3.Lerp(transform.position, HandJoint.transform.position, 0.5f);
             yield return _handMoveRate;
@@ -163,15 +169,6 @@ public class PlayerHandAction : MonoBehaviour, IPunObservable
         _isHandUsing = false;
     }
     #endregion
-
-    // Grab object if object is in Trigger
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.tag == "Ingredient" && !_isHandUsing && !XRDevice.isPresent)
-        {
-            HoldGrabObject(other.gameObject);
-        }
-    }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

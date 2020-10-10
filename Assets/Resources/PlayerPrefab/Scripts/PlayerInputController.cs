@@ -186,7 +186,8 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
             }
             else
             {
-                _leftHandAction.KMPlayerGrabAction(targetHandPoint);
+                Ray cameraMiddleRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                _leftHandAction.KMPlayerGrabAction(targetHandPoint, cameraMiddleRay, InteractionObjectLayer);
             }
         }
         else if(Input.GetButtonDown("Fire2"))
@@ -197,7 +198,8 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
             }
             else
             {
-                _rightHandAction.KMPlayerGrabAction(targetHandPoint);
+                Ray cameraMiddleRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                _rightHandAction.KMPlayerGrabAction(targetHandPoint, cameraMiddleRay, InteractionObjectLayer);
             }
         }
 
