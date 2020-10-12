@@ -66,6 +66,11 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     private SteamVR_Behaviour_Pose _trackedObjLeftHand;
     #endregion
 
+    public void SetCurrentPosition(Vector3 position)
+    {
+        _currentInput.PositionInput = position;
+    }
+
     #region MonoBehaviour Callbacks
     public void Awake()
     {
@@ -214,21 +219,24 @@ public class PlayerInputController : MonoBehaviourPunCallbacks
     #region Steam VR Player Input Handler
     private void SVRPositionInput()
     {
+
+        Vector3 direction = Vector3.zero;
+        if (_north.GetState(_trackedObjRightHand.inputSource)) direction.z = 1;
+        if (_south.GetState(_trackedObjRightHand.inputSource)) direction.z = -1;
+        if (_west.GetState(_trackedObjRightHand.inputSource)) direction.x = -1;
+        if (_east.GetState(_trackedObjRightHand.inputSource)) direction.x = 1;
+
+        _currentInput.PositionInput = PlayerCamera.transform.rotation * direction;
+
         if (KATWalkDeviceManager.Instance == null)
         {
-            Vector3 direction = Vector3.zero;
-            if (_north.GetState(_trackedObjRightHand.inputSource)) direction.z = 1;
-            if (_south.GetState(_trackedObjRightHand.inputSource)) direction.z = -1;
-            if (_west.GetState(_trackedObjRightHand.inputSource)) direction.x = -1;
-            if (_east.GetState(_trackedObjRightHand.inputSource)) direction.x = 1;
 
-            _currentInput.PositionInput = PlayerCamera.transform.rotation * direction;
         }
     }
 
     private void SVRRotationInput()
     {
-        if (KATWalkDeviceManager.Instance == null) 
+        if (!KATWalkDeviceManager.Instance.Launched)
         {
             PlayerCharacterBody.transform.rotation = PlayerCamera.transform.rotation;
         }

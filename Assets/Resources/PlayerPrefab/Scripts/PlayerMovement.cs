@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunObservable
     private void Start()
     {
         _characterController = GetComponent<CharacterController>();
+        _rotationHorizontalValue = transform.rotation.eulerAngles.y;
     }
 
     // Apply Movement by Current Input

@@ -840,7 +840,7 @@ MonoBehaviour:
   PlayerCamera: {fileID: 3784162833005984484}
   PlayerHandR: {fileID: 828519858072577342}
   PlayerHandL: {fileID: 1838800472647025868}
-  PlayerCharacterBody: {fileID: 0}
+  PlayerCharacterBody: {fileID: 4703499171239449205}
   KMCameraRotationSpeed: 100
   KMPlayerHandLenght: 1.45
   InteractionObjectLayer:
